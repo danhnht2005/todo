@@ -5,12 +5,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   await dotenv.load();
 
-  final supabaseUrl = dotenv.get('SUPABASE_URL');
-  final supabaseAnonKey = dotenv.get('SUPABASE_ANON_KEY');
-
   await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
+    url: dotenv.get('SUPABASE_URL'),
+    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
   );
 
   runApp(const MyApp());
