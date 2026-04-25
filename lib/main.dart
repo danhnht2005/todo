@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'config/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/providers/auth_provider.dart';
@@ -38,6 +39,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Antigravity To-Do List',
         debugShowCheckedModeBanner: false,
+
+        // BotToast - cần builder và navigatorObservers để toast hiển thị
+        builder: BotToastInit(),
+        navigatorObservers: [BotToastNavigatorObserver()],
 
         home: const LoginPage(),
 
