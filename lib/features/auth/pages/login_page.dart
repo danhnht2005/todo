@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/build_label.dart';
 
 /// LoginPage — Trang đăng nhập
 class LoginPage extends StatefulWidget {
@@ -29,15 +30,16 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final success = await context.read<AuthProvider>().login(
       email: _emailController.text.trim(),
       password: _passwordController.text,
     );
-    
+
     if (mounted) {
       if (success) {
-        context.go('/home');
+        // context.go('/home');
+        print('login success');
       } else {
         final errorMsg = context.read<AuthProvider>().errorMessage;
         if (errorMsg != null) {
@@ -73,7 +75,9 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -81,19 +85,22 @@ class _LoginPageState extends State<LoginPage> {
                   'Đăng nhập để quản lý công việc của bạn',
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppSizes.xxxl),
 
                 // ─── Email Field ───
-                _buildLabel('Email', isDark),
+                buildLabel('Email', isDark),
                 const SizedBox(height: AppSizes.sm),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
-                    if (val == null || val.isEmpty) return 'Vui lòng nhập email';
+                    if (val == null || val.isEmpty)
+                      return 'Vui lòng nhập email';
                     if (!val.contains('@')) return 'Email không hợp lệ';
                     return null;
                   },
@@ -105,24 +112,30 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: AppSizes.xl),
 
                 // ─── Password Field ───
-                _buildLabel('Mật khẩu', isDark),
+                buildLabel('Mật khẩu', isDark),
                 const SizedBox(height: AppSizes.sm),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   validator: (val) {
-                    if (val == null || val.isEmpty) return 'Vui lòng nhập mật khẩu';
+                    if (val == null || val.isEmpty)
+                      return 'Vui lòng nhập mật khẩu';
                     if (val.length < 6) return 'Mật khẩu tối thiểu 6 ký tự';
                     return null;
                   },
                   decoration: InputDecoration(
                     hintText: '••••••••',
-                    prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+                    prefixIcon: const Icon(
+                      Icons.lock_outline_rounded,
+                      size: 20,
+                    ),
                     suffixIcon: IconButton(
                       onPressed: () =>
                           setState(() => _obscurePassword = !_obscurePassword),
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        _obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                         size: 20,
                       ),
                     ),
@@ -144,12 +157,17 @@ class _LoginPageState extends State<LoginPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation(
+                                    Colors.white,
+                                  ),
                                 ),
                               )
                             : const Text(
                                 'Đăng nhập',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                       ),
                     );
@@ -165,7 +183,9 @@ class _LoginPageState extends State<LoginPage> {
                       'Chưa có tài khoản? ',
                       style: TextStyle(
                         fontSize: 14,
-                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : AppColors.textSecondary,
                       ),
                     ),
                     GestureDetector(
@@ -204,11 +224,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
-          child: const Icon(
-            Icons.check_rounded,
-            color: Colors.white,
-            size: 28,
-          ),
+          child: const Icon(Icons.check_rounded, color: Colors.white, size: 28),
         ),
         const SizedBox(width: AppSizes.md),
         Text(
@@ -223,14 +239,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildLabel(String text, bool isDark) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
-      ),
-    );
-  }
+  // Widget _buildLabel(String text, bool isDark) {
+  //   return Text(
+  //     text,
+  //     style: TextStyle(
+  //       fontSize: 13,
+  //       fontWeight: FontWeight.w600,
+  //       color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+  //     ),
+  //   );
+  // }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -51,20 +52,32 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _errorMessage = null;
 
-    final response = await _authService.signIn(
-      email: email,
-      password: password,
-    );
-    final user = response.user;
-    if (user != null) {
-      _isAuthenticated = true;
-      _userId = user.id;
-      _displayName = user.userMetadata?['full_name'] ?? user.email ?? '';
-      _email = user.email ?? '';
+    try {
+      final response = await _authService.signIn(
+        email: email,
+        password: password,
+      );
+      final user = response.user;
+      if (user != null) {
+        _isAuthenticated = true;
+        _userId = user.id;
+        _displayName = user.userMetadata?['full_name'] ?? user.email ?? '';
+        _email = user.email ?? '';
+        _setLoading(false);
+        return true;
+      } else {
+        _errorMessage = 'Đăng nhập thất bại';
+        _isAuthenticated = false;
+        _setLoading(false);
+        return false;
+      }
+    } on AuthException catch (e) {
+      _errorMessage = _mapAuthError(e.message);
+      _isAuthenticated = false;
       _setLoading(false);
-      return true;
-    } else {
-      _errorMessage = 'Đăng nhập thất bại';
+      return false;
+    } catch (e) {
+      _errorMessage = 'Lỗi: ${e.toString()}';
       _isAuthenticated = false;
       _setLoading(false);
       return false;
@@ -80,21 +93,33 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
     _errorMessage = null;
 
-    final response = await _authService.signUp(
-      email: email,
-      password: password,
-      fullName: fullName,
-    );
-    final user = response.user;
-    if (user != null) {
-      _isAuthenticated = true;
-      _userId = user.id;
-      _displayName = fullName;
-      _email = email;
+    try {
+      final response = await _authService.signUp(
+        email: email,
+        password: password,
+        fullName: fullName,
+      );
+      final user = response.user;
+      if (user != null) {
+        _isAuthenticated = true;
+        _userId = user.id;
+        _displayName = fullName;
+        _email = email;
+        _setLoading(false);
+        return true;
+      } else {
+        _errorMessage = 'Đăng ký thất bại';
+        _isAuthenticated = false;
+        _setLoading(false);
+        return false;
+      }
+    } on AuthException catch (e) {
+      _errorMessage = _mapAuthError(e.message);
+      _isAuthenticated = false;
       _setLoading(false);
-      return true;
-    } else {
-      _errorMessage = 'Đăng ký thất bại';
+      return false;
+    } catch (e) {
+      _errorMessage = 'Lỗi: ${e.toString()}';
       _isAuthenticated = false;
       _setLoading(false);
       return false;
@@ -111,19 +136,19 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // String _mapAuthError(String message) {
-  //   if (message.contains('Invalid login credentials')) {
-  //     return 'Email hoặc mật khẩu không đúng';
-  //   }
-  //   if (message.contains('User already registered')) {
-  //     return 'Email đã được đăng ký';
-  //   }
-  //   if (message.contains('Email not confirmed')) {
-  //     return 'Vui lòng xác nhận email trước khi đăng nhập';
-  //   }
-  //   if (message.contains('Password should be at least')) {
-  //     return 'Mật khẩu phải có ít nhất 6 ký tự';
-  //   }
-  //   return message;
-  // }
+  String _mapAuthError(String message) {
+    if (message.contains('Invalid login credentials')) {
+      return 'Email hoặc mật khẩu không đúng';
+    }
+    if (message.contains('User already registered')) {
+      return 'Email đã được đăng ký';
+    }
+    if (message.contains('Email not confirmed')) {
+      return 'Vui lòng xác nhận email trước khi đăng nhập';
+    }
+    if (message.contains('Password should be at least')) {
+      return 'Mật khẩu phải có ít nhất 6 ký tự';
+    }
+    return message;
+  }
 }
