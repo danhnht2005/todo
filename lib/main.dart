@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         title: 'Antigravity To-Do List',
         debugShowCheckedModeBanner: false,
 
-        // BotToast - cần builder và navigatorObservers để toast hiển thị
+        // BotToast
         builder: BotToastInit(),
         navigatorObservers: [BotToastNavigatorObserver()],
 
