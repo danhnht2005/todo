@@ -6,7 +6,7 @@ import 'config/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/services/auth_service.dart';
-import 'features/auth/pages/login_page.dart';
+import 'config/routes/app_router.dart';
 
 void main() async {
   await dotenv.load();
@@ -36,18 +36,15 @@ class MyApp extends StatelessWidget {
               AuthProvider(authService: context.read<AuthService>()),
         ),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         title: 'Antigravity To-Do List',
         debugShowCheckedModeBanner: false,
 
         // BotToast
         builder: BotToastInit(),
-        navigatorObservers: [BotToastNavigatorObserver()],
 
-        home: const LoginPage(),
-
-        // // Routing
-        // routerConfig: AppRouter.router,
+        // Routing
+        routerConfig: AppRouter.router,
 
         // Theme
         theme: AppTheme.lightTheme,
