@@ -143,12 +143,6 @@ class AuthProvider extends ChangeNotifier {
     if (message.contains('User already registered')) {
       return 'Email đã được đăng ký';
     }
-    if (message.contains('Email not confirmed')) {
-      return 'Vui lòng xác nhận email trước khi đăng nhập';
-    }
-    if (message.contains('Password should be at least')) {
-      return 'Mật khẩu phải có ít nhất 6 ký tự';
-    }
     return message;
   }
 }

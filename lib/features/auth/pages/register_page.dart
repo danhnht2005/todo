@@ -47,10 +47,7 @@ class _RegisterPageState extends State<RegisterPage>
       if (success) {
         context.pop();
       } else {
-        final errorMsg = context.read<AuthProvider>().errorMessage;
-        if (errorMsg != null) {
-          context.showSnackBar(errorMsg, isError: true);
-        }
+        context.read<AuthProvider>().errorMessage;
       }
     }
   }
@@ -229,6 +226,15 @@ class _RegisterPageState extends State<RegisterPage>
                                 ),
                               ),
                       ),
+                    );
+                  },
+                ),
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    final errorMessage = authProvider.errorMessage;
+                    return Text(
+                      errorMessage ?? '',
+                      style: TextStyle(fontSize: 12, color: AppColors.error),
                     );
                   },
                 ),
