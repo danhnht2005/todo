@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bot_toast/bot_toast.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
@@ -43,15 +42,7 @@ class _LoginPageState extends State<LoginPage> {
         // context.go('/home');
         print('login success');
       } else {
-        final errorMsg = context.read<AuthProvider>().errorMessage;
-        if (errorMsg != null) {
-          // context.showSnackBar(errorMsg, isError: true);
-          BotToast.showText(
-            text: errorMsg,
-            contentColor: Color(0xFF242424),
-            duration: Duration(seconds: 3),
-          );
-        }
+        context.read<AuthProvider>().errorMessage;
       }
     }
   }
@@ -177,6 +168,15 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                       ),
+                    );
+                  },
+                ),
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    final errorMessage = authProvider.errorMessage;
+                    return Text(
+                      errorMessage ?? '',
+                      style: TextStyle(fontSize: 12, color: AppColors.error),
                     );
                   },
                 ),
