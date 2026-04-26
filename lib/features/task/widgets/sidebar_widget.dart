@@ -56,7 +56,7 @@ class SidebarWidget extends StatelessWidget {
                     icon: Icons.home_rounded,
                     title: 'Tất cả',
                     color: AppColors.allTasks,
-                    routeName: 'all',
+                    routeName: 'all-tasks',
                   ),
 
                   // Divider
