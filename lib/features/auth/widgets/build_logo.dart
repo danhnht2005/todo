@@ -20,7 +20,7 @@ Widget buildLogo(bool isDark) {
       ),
       const SizedBox(width: AppSizes.md),
       Text(
-        'To-Do List',
+        'To Do',
         style: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w700,

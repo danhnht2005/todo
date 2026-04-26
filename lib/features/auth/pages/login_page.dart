@@ -97,8 +97,9 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
-                    if (val == null || val.isEmpty)
+                    if (val == null || val.isEmpty) {
                       return 'Vui lòng nhập email';
+                    }
                     if (!val.contains('@')) return 'Email không hợp lệ';
                     return null;
                   },
@@ -116,8 +117,9 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   validator: (val) {
-                    if (val == null || val.isEmpty)
+                    if (val == null || val.isEmpty) {
                       return 'Vui lòng nhập mật khẩu';
+                    }
                     if (val.length < 6) return 'Mật khẩu tối thiểu 6 ký tự';
                     return null;
                   },
