@@ -35,7 +35,7 @@ class SidebarWidget extends StatelessWidget {
                     icon: Icons.wb_sunny_rounded,
                     title: 'My Day',
                     color: AppColors.myDay,
-                    routeName: 'my-day',
+                    routeName: 'home',
                   ),
                   _buildSmartListItem(
                     context: context,

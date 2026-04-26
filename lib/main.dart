@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -9,6 +10,11 @@ import 'features/auth/services/auth_service.dart';
 import 'config/routes/app_router.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize locale data for Vietnamese date formatting
+  await initializeDateFormatting('vi');
+
   await dotenv.load();
 
   await Supabase.initialize(
