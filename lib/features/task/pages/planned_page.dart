@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_sizes.dart';
-import '../../../core/utils/extensions.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/utils/extensions.dart';
 
-/// ImportantPage — Trang hiển thị task quan trọng
-class ImportantPage extends StatelessWidget {
-  const ImportantPage({super.key});
+/// PlannedPage — Trang hiển thị task có due date
+class PlannedPage extends StatelessWidget {
+  const PlannedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class ImportantPage extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppColors.important.withValues(alpha: isDark ? 0.2 : 0.08),
+                AppColors.planned.withValues(alpha: isDark ? 0.2 : 0.08),
                 Colors.transparent,
               ],
             ),
@@ -35,13 +35,13 @@ class ImportantPage extends StatelessWidget {
           child: Row(
             children: [
               const Icon(
-                Icons.star_rounded,
-                color: AppColors.important,
+                Icons.calendar_month_rounded,
+                color: AppColors.planned,
                 size: 28,
               ),
               const SizedBox(width: AppSizes.md),
               Text(
-                'Quan trọng',
+                'Đã lên kế hoạch',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,

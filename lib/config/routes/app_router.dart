@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../features/task/pages/planned_page.dart';
 import '../../features/task/pages/important_page.dart';
 import '../../features/auth/pages/register_page.dart';
 import '../../features/auth/pages/login_page.dart';
@@ -45,6 +46,10 @@ class AppRouter {
           GoRoute(
             path: '/important',
             builder: (context, state) => const ImportantPage(),
+          ),
+          GoRoute(
+            path: '/planned',
+            builder: (context, state) => const PlannedPage(),
           ),
         ],
       ),

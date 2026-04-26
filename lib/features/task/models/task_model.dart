@@ -112,7 +112,7 @@ class TaskModel {
     return {
       'user_id': userId,
       'title': title,
-      if (note != null) 'note': note,
+      'note': note,
       'is_important': isImportant,
       'is_my_day': isMyDay,
       'list_id': listId,
