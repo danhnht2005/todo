@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:todo/core/constants/app_sizes.dart';
+import 'package:todo/features/task/widgets/sidebar_widget.dart';
 import '../.././../core/constants/app_colors.dart';
 import 'package:todo/core/utils/extensions.dart';
 
@@ -12,6 +14,12 @@ class MainLayout extends StatelessWidget {
     final isDark = context.isDarkMode;
 
     return Scaffold(
+      // ─── Drawer ───
+      drawer: Drawer(
+        width: AppSizes.sidebarWidth(context),
+        child: SidebarWidget(),
+      ),
+
       // ─── AppBar ───
       appBar: AppBar(
         leading: Builder(
