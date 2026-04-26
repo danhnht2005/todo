@@ -1,46 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../widgets/build_label.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/build_logo.dart';
-import '../widgets/build_label.dart';
 
-/// LoginPage — Trang đăng nhập
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+/// RegisterPage — Trang đăng ký tài khoản
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage>
+    with SingleTickerProviderStateMixin {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _login() async {
+  void _register() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final success = await context.read<AuthProvider>().login(
+    final success = await context.read<AuthProvider>().register(
       email: _emailController.text.trim(),
       password: _passwordController.text,
+      fullName: _nameController.text.trim(),
     );
 
     if (mounted) {
       if (success) {
-        // context.go('/home');
-        print('login success');
+        context.pop();
       } else {
         context.read<AuthProvider>().errorMessage;
       }
@@ -50,9 +55,14 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-    final screenHeight = context.screenHeight;
 
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl),
@@ -61,15 +71,11 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: screenHeight * 0.08),
+                const SizedBox(height: AppSizes.lg),
 
-                // ─── Logo & Title ───
-                buildLogo(isDark),
-                SizedBox(height: screenHeight * 0.06),
-
-                // ─── Welcome Text ───
+                // ─── Title ───
                 Text(
-                  'Chào mừng trở lại!',
+                  'Tạo tài khoản',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
@@ -80,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Đăng nhập để quản lý công việc của bạn',
+                  'Bắt đầu quản lý công việc hiệu quả',
                   style: TextStyle(
                     fontSize: 14,
                     color: isDark
@@ -90,7 +96,25 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: AppSizes.xxxl),
 
-                // ─── Email Field ───
+                // ─── Name ───
+                buildLabel('Họ và tên', isDark),
+                const SizedBox(height: AppSizes.sm),
+                TextFormField(
+                  controller: _nameController,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Vui lòng nhập tên';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Nguyễn Văn A',
+                    prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
+                  ),
+                ),
+                const SizedBox(height: AppSizes.xl),
+
+                // ─── Email ───
                 buildLabel('Email', isDark),
                 const SizedBox(height: AppSizes.sm),
                 TextFormField(
@@ -110,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: AppSizes.xl),
 
-                // ─── Password Field ───
+                // ─── Password ───
                 buildLabel('Mật khẩu', isDark),
                 const SizedBox(height: AppSizes.sm),
                 TextFormField(
@@ -141,16 +165,48 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: AppSizes.lg),
+                const SizedBox(height: AppSizes.xl),
 
-                // ─── Login Button ───
+                // ─── Confirm Password ───
+                buildLabel('Xác nhận mật khẩu', isDark),
+                const SizedBox(height: AppSizes.sm),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  obscureText: _obscureConfirm,
+                  validator: (val) {
+                    if (val != _passwordController.text) {
+                      return 'Mật khẩu xác nhận không khớp';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    hintText: '••••••••',
+                    prefixIcon: const Icon(
+                      Icons.lock_outline_rounded,
+                      size: 20,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
+                      icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSizes.xxxl),
+
+                // ─── Register Button ───
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, child) {
                     final isLoading = authProvider.isLoading;
                     return SizedBox(
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: isLoading ? null : _login,
+                        onPressed: isLoading ? null : _register,
                         child: isLoading
                             ? const SizedBox(
                                 width: 20,
@@ -163,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               )
                             : const Text(
-                                'Đăng nhập',
+                                'Đăng ký',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -182,14 +238,14 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                 ),
-                const SizedBox(height: AppSizes.xxxl),
+                const SizedBox(height: AppSizes.xxl),
 
-                // ─── Register Link ───
+                // ─── Login Link ───
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Chưa có tài khoản? ',
+                      'Đã có tài khoản? ',
                       style: TextStyle(
                         fontSize: 14,
                         color: isDark
@@ -198,9 +254,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => context.push('/register'),
+                      onTap: () => context.pop(),
                       child: const Text(
-                        'Đăng ký',
+                        'Đăng nhập',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -210,7 +266,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: AppSizes.xxl),
+                const SizedBox(height: AppSizes.xxxl),
               ],
             ),
           ),
