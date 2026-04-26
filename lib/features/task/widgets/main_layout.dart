@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import '../.././../core/constants/app_colors.dart';
+import 'package:todo/core/utils/extensions.dart';
 
 class MainLayout extends StatelessWidget {
   final Widget child;
@@ -8,22 +9,38 @@ class MainLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Ứng dụng của tôi')),
-      // Mọi nội dung của các route con sẽ được hiển thị ở phần body này
-      body: child,
+    final isDark = context.isDarkMode;
 
-      // Ví dụ một BottomNavigationBar dùng chung cho toàn bộ layout
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+    return Scaffold(
+      // ─── AppBar ───
+      appBar: AppBar(
+        leading: Builder(
+          builder: (context) => IconButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: Icon(
+              Icons.menu_rounded,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+            ),
+          ),
+        ),
+        actions: [
+          // Search button
+          IconButton(
+            // onPressed: _showSearchDialog,
+            onPressed: () => {},
+            icon: Icon(
+              Icons.search_rounded,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(width: 4),
         ],
-        onTap: (index) {
-          if (index == 0) context.go('/home');
-          if (index == 1) context.go('/profile');
-        },
       ),
+
+      // ─── Body ───
+      body: child,
     );
   }
 }
