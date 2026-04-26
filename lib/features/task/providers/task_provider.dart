@@ -5,8 +5,7 @@ import '../services/task_service.dart';
 class TaskProvider extends ChangeNotifier {
   final TaskService _taskService;
 
-  TaskProvider({required TaskService taskService})
-      : _taskService = taskService;
+  TaskProvider({required TaskService taskService}) : _taskService = taskService;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -129,36 +128,36 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> toggleComplete({required String taskId, required bool isCompleted}) async {
+  Future<void> toggleComplete({
+    required String taskId,
+    required bool isCompleted,
+  }) async {
     try {
-      await _taskService.updateTask(
-        taskId: taskId,
-        isCompleted: isCompleted,
-      );
+      await _taskService.updateTask(taskId: taskId, isCompleted: isCompleted);
       await _reload();
     } catch (e) {
       _setError('Lỗi: ${e.toString()}');
     }
   }
 
-  Future<void> toggleImportant({required String taskId, required bool isImportant}) async {
+  Future<void> toggleImportant({
+    required String taskId,
+    required bool isImportant,
+  }) async {
     try {
-      await _taskService.updateTask(
-        taskId: taskId,
-        isImportant: isImportant,
-      );
+      await _taskService.updateTask(taskId: taskId, isImportant: isImportant);
       await _reload();
     } catch (e) {
       _setError('Lỗi: ${e.toString()}');
     }
   }
 
-  Future<void> toggleMyDay({required String taskId, required bool isMyDay}) async {
+  Future<void> toggleMyDay({
+    required String taskId,
+    required bool isMyDay,
+  }) async {
     try {
-      await _taskService.updateTask(
-        taskId: taskId,
-        isMyDay: isMyDay,
-      );
+      await _taskService.updateTask(taskId: taskId, isMyDay: isMyDay);
       await _reload();
     } catch (e) {
       _setError('Lỗi: ${e.toString()}');
@@ -195,33 +194,6 @@ class TaskProvider extends ChangeNotifier {
       await _reload();
     } catch (e) {
       _setError('Không thể cập nhật: ${e.toString()}');
-    }
-  }
-
-  Future<void> addStep({required String taskId, required String title}) async {
-    try {
-      await _taskService.addStep(taskId: taskId, title: title);
-      await _reload();
-    } catch (e) {
-      _setError('Không thể thêm bước: ${e.toString()}');
-    }
-  }
-
-  Future<void> toggleStep({required String stepId, required bool isCompleted}) async {
-    try {
-      await _taskService.toggleStep(stepId: stepId, isCompleted: isCompleted);
-      await _reload();
-    } catch (e) {
-      _setError('Lỗi: ${e.toString()}');
-    }
-  }
-
-  Future<void> deleteStep(String stepId) async {
-    try {
-      await _taskService.deleteStep(stepId);
-      await _reload();
-    } catch (e) {
-      _setError('Lỗi: ${e.toString()}');
     }
   }
 
