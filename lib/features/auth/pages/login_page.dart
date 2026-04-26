@@ -39,8 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (mounted) {
       if (success) {
-        // context.go('/home');
-        print('login success');
+        context.go('/home');
       } else {
         context.read<AuthProvider>().errorMessage;
       }
