@@ -3,6 +3,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'features/task/services/task_service.dart';
+import 'features/task/providers/task_provider.dart';
 import 'config/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/providers/auth_provider.dart';
@@ -35,11 +37,16 @@ class MyApp extends StatelessWidget {
       providers: [
         // Services
         Provider(create: (_) => AuthService()),
+        Provider(create: (_) => TaskService()),
 
         // Providers (State Management)
         ChangeNotifierProvider(
           create: (context) =>
               AuthProvider(authService: context.read<AuthService>()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              TaskProvider(taskService: context.read<TaskService>()),
         ),
       ],
       child: MaterialApp.router(
