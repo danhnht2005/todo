@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/pages/register_page.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/task/pages/home_page.dart';
+import '../../features/task/pages/my_day_page.dart';
 import '../../features/task/widgets/main_layout.dart';
 
 /// AppRouter — Cấu hình GoRouter
@@ -21,7 +22,7 @@ class AppRouter {
 
       // Chưa đăng nhập → về login
       if (!isAuthenticated && !isAuthRoute) {
-        return '/login';
+        return '/my-day';
       }
 
       // Đã đăng nhập mà vào trang auth → về home
@@ -37,7 +38,10 @@ class AppRouter {
           return MainLayout(child: child);
         },
         routes: [
-          GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+          GoRoute(
+            path: '/my-day',
+            builder: (context, state) => const MyDayPage(),
+          ),
         ],
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),

@@ -35,28 +35,28 @@ class SidebarWidget extends StatelessWidget {
                     icon: Icons.wb_sunny_rounded,
                     title: 'My Day',
                     color: AppColors.myDay,
-                    index: 0,
+                    routeName: 'my-day',
                   ),
                   _buildSmartListItem(
                     context: context,
                     icon: Icons.star_rounded,
                     title: 'Quan trọng',
                     color: AppColors.important,
-                    index: 1,
+                    routeName: 'important',
                   ),
                   _buildSmartListItem(
                     context: context,
                     icon: Icons.calendar_month_rounded,
                     title: 'Đã lên kế hoạch',
                     color: AppColors.planned,
-                    index: 2,
+                    routeName: 'planned',
                   ),
                   _buildSmartListItem(
                     context: context,
                     icon: Icons.home_rounded,
                     title: 'Tất cả',
                     color: AppColors.allTasks,
-                    index: 3,
+                    routeName: 'all',
                   ),
 
                   // Divider
@@ -197,7 +197,7 @@ class SidebarWidget extends StatelessWidget {
     required IconData icon,
     required String title,
     required Color color,
-    required int index,
+    required String routeName,
   }) {
     final isDark = context.isDarkMode;
 
@@ -206,7 +206,10 @@ class SidebarWidget extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          // onTap: () => onSmartListSelected(index),
+          onTap: () {
+            Navigator.pop(context); // Đóng Drawer trước
+            context.go('/$routeName');
+          },
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
