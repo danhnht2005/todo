@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/pages/register_page.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/task/pages/home_page.dart';
+import '../../features/task/widgets/main_layout.dart';
 
 /// AppRouter — Cấu hình GoRouter
 class AppRouter {
@@ -31,12 +32,19 @@ class AppRouter {
       return null; // Không redirect
     },
     routes: [
+      ShellRoute(
+        builder: (context, state, child) {
+          return MainLayout(child: child);
+        },
+        routes: [
+          GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+        ],
+      ),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterPage(),
       ),
-      GoRoute(path: '/home', builder: (context, state) => const HomePage()),
     ],
   );
 }
