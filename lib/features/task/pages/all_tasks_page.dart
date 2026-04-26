@@ -9,50 +9,60 @@ class AllTasksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        // Header
+        _AllTasksHeader(),
+      ],
+    );
+  }
+}
+
+class _AllTasksHeader extends StatelessWidget {
+  const _AllTasksHeader();
+
+  @override
+  Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
 
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(
-            AppSizes.xxl,
-            AppSizes.lg,
-            AppSizes.xxl,
-            AppSizes.md,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.xxl,
+        AppSizes.lg,
+        AppSizes.xxl,
+        AppSizes.md,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.allTasks.withValues(alpha: isDark ? 0.2 : 0.08),
+            Colors.transparent,
+          ],
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.home_rounded,
+            color: AppColors.allTasks,
+            size: 28,
           ),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.allTasks.withValues(alpha: isDark ? 0.2 : 0.08),
-                Colors.transparent,
-              ],
+          const SizedBox(width: AppSizes.md),
+          Text(
+            'All Tasks',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: isDark
+                  ? AppColors.textPrimaryDark
+                  : AppColors.textPrimary,
             ),
           ),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.home_rounded,
-                color: AppColors.allTasks,
-                size: 28,
-              ),
-              const SizedBox(width: AppSizes.md),
-              Text(
-                'All Tasks',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: isDark
-                      ? AppColors.textPrimaryDark
-                      : AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
