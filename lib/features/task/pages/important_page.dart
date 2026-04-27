@@ -17,8 +17,6 @@ class ImportantPage extends StatefulWidget {
 }
 
 class _ImportantPageState extends State<ImportantPage> {
-  bool showCompleted = true;
-
   @override
   void initState() {
     super.initState();
@@ -27,22 +25,14 @@ class _ImportantPageState extends State<ImportantPage> {
     });
   }
 
-  void _toggleShowCompleted() {
-    setState(() {
-      showCompleted = !showCompleted;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         // Header
-        _ImportantHeader(
-          showCompleted: showCompleted,
-          onToggleShowCompleted: _toggleShowCompleted,
-        ),
+        _ImportantHeader(),
 
+        // Task List
         Expanded(
           child: Consumer<TaskProvider>(
             builder: (context, provider, child) {
@@ -72,7 +62,6 @@ class _ImportantPageState extends State<ImportantPage> {
               return _ImportantTaskList(
                 incomplete: incomplete,
                 completed: completed,
-                showCompleted: showCompleted,
               );
             },
           ),
@@ -83,13 +72,7 @@ class _ImportantPageState extends State<ImportantPage> {
 }
 
 class _ImportantHeader extends StatelessWidget {
-  final bool showCompleted;
-  final VoidCallback onToggleShowCompleted;
-
-  const _ImportantHeader({
-    required this.showCompleted,
-    required this.onToggleShowCompleted,
-  });
+  const _ImportantHeader();
 
   @override
   Widget build(BuildContext context) {
@@ -125,32 +108,6 @@ class _ImportantHeader extends StatelessWidget {
               color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
             ),
           ),
-          const Spacer(),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_horiz),
-            color: Colors.black,
-            surfaceTintColor: Colors.transparent,
-            onSelected: (String value) {
-              if (value == 'sort') {
-                // Xử lý khi chọn "Sắp xếp"
-              } else if (value == 'toggle_completed') {
-                onToggleShowCompleted();
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'sort',
-                child: Text('Sắp xếp', style: TextStyle(color: Colors.white)),
-              ),
-              PopupMenuItem<String>(
-                value: 'toggle_completed',
-                child: Text(
-                  showCompleted ? 'Ẩn task hoàn thành' : 'Hiện task hoàn thành',
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -160,27 +117,24 @@ class _ImportantHeader extends StatelessWidget {
 class _ImportantTaskList extends StatefulWidget {
   final List<TaskModel> incomplete;
   final List<TaskModel> completed;
-  final bool showCompleted;
-  const _ImportantTaskList({
-    required this.incomplete,
-    required this.completed,
-    required this.showCompleted,
-  });
+  const _ImportantTaskList({required this.incomplete, required this.completed});
 
   @override
   State<_ImportantTaskList> createState() => _ImportantTaskListState();
 }
 
 class _ImportantTaskListState extends State<_ImportantTaskList> {
+  bool _showCompleted = false;
+
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
     return ListView(
       padding: const EdgeInsets.only(top: AppSizes.sm),
       children: [
         ...widget.incomplete.map(
           (task) => TaskTile(
             task: task,
-            accentColor: AppColors.important,
             onToggle: () => context.read<TaskProvider>().toggleComplete(
               taskId: task.id,
               isCompleted: !task.isCompleted,
@@ -194,24 +148,60 @@ class _ImportantTaskListState extends State<_ImportantTaskList> {
             onTap: () => {},
           ),
         ),
-        if (widget.showCompleted)
-          ...widget.completed.map(
-            (task) => TaskTile(
-              task: task,
-              accentColor: AppColors.important,
-              onToggle: () => context.read<TaskProvider>().toggleComplete(
-                taskId: task.id,
-                isCompleted: !task.isCompleted,
+        if (widget.completed.isNotEmpty) ...[
+          const SizedBox(height: AppSizes.sm),
+          InkWell(
+            onTap: () => setState(() => _showCompleted = !_showCompleted),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.lg,
+                vertical: AppSizes.md,
               ),
-              onToggleImportant: () =>
-                  context.read<TaskProvider>().toggleImportant(
-                    taskId: task.id,
-                    isImportant: !task.isImportant,
+              child: Row(
+                children: [
+                  Icon(
+                    _showCompleted
+                        ? Icons.expand_more_rounded
+                        : Icons.chevron_right_rounded,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondary,
+                    size: 20,
                   ),
-              onDelete: () => context.read<TaskProvider>().deleteTask(task.id),
-              onTap: () => {},
+                  const SizedBox(width: AppSizes.sm),
+                  Text(
+                    'Đã hoàn thành (${widget.completed.length})',
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+          if (_showCompleted)
+            ...widget.completed.map(
+              (task) => TaskTile(
+                task: task,
+                onToggle: () => context.read<TaskProvider>().toggleComplete(
+                  taskId: task.id,
+                  isCompleted: !task.isCompleted,
+                ),
+                onToggleImportant: () =>
+                    context.read<TaskProvider>().toggleImportant(
+                      taskId: task.id,
+                      isImportant: !task.isImportant,
+                    ),
+                onDelete: () =>
+                    context.read<TaskProvider>().deleteTask(task.id),
+                onTap: () => {},
+              ),
+            ),
+        ],
         const SizedBox(height: 100),
       ],
     );

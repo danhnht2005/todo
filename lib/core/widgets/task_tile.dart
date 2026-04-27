@@ -6,7 +6,7 @@ import '../utils/extensions.dart';
 
 class TaskTile extends StatelessWidget {
   final TaskModel task;
-  final Color accentColor;
+  // final Color accentColor;
   final VoidCallback onToggle;
   final VoidCallback onToggleImportant;
   final VoidCallback onDelete;
@@ -15,7 +15,7 @@ class TaskTile extends StatelessWidget {
   const TaskTile({
     super.key,
     required this.task,
-    required this.accentColor,
+    // required this.accentColor,
     required this.onToggle,
     required this.onToggleImportant,
     required this.onDelete,
@@ -57,7 +57,7 @@ class TaskTile extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
-                  color: task.isCompleted ? AppColors.checkGreen : accentColor,
+                  color: task.isCompleted ? AppColors.checkGreen : Colors.grey,
                 ),
                 onPressed: onToggle,
               ),
