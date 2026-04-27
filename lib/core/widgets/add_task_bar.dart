@@ -63,6 +63,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
     final isDark = context.isDarkMode;
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
