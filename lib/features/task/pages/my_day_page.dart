@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/core/widgets/empty_state_widget.dart';
-import 'package:todo/features/task/widgets/task_list.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../features/task/widgets/task_list.dart';
 import '../../../features/task/providers/task_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
