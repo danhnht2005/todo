@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/core/widgets/empty_state_widget.dart';
+import 'package:todo/features/task/widgets/task_list.dart';
+import '../../../features/task/providers/task_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/date_formatter.dart';
@@ -13,11 +17,70 @@ class MyDayPage extends StatefulWidget {
 
 class _MyDayPageState extends State<MyDayPage> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TaskProvider>().loadTasks(isMyDay: true);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         // Header
         _MyDayHeader(),
+
+        // Task List
+        Expanded(
+          child: Consumer<TaskProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (provider.errorMessage != null) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: AppColors.error,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(provider.errorMessage!, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => provider.loadTasks(isMyDay: true),
+                        child: const Text('Thử lại'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              final incomplete = provider.tasks
+                  .where((t) => !t.isCompleted)
+                  .toList();
+              final completed = provider.tasks
+                  .where((t) => t.isCompleted)
+                  .toList();
+
+              if (incomplete.isEmpty && completed.isEmpty) {
+                return const EmptyStateWidget(
+                  icon: Icons.wb_sunny_outlined,
+                  title: 'Tập trung vào ngày của bạn',
+                  subtitle:
+                      'Thêm công việc bạn muốn hoàn thành hôm nay.\nNhấn + ở bên dưới để bắt đầu.',
+                  iconColor: AppColors.myDay,
+                );
+              }
+
+              return TaskList(incomplete: incomplete, completed: completed);
+            },
+          ),
+        ),
       ],
     );
   }
