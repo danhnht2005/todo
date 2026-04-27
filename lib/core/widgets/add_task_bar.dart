@@ -48,53 +48,71 @@ class _AddTaskBarState extends State<AddTaskBar> {
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.md,
-        vertical: AppSizes.sm,
+    return FloatingActionButton(
+      onPressed: () => _showAddTaskBar(context),
+      backgroundColor: widget.accentColor,
+      shape: const CircleBorder(),
+      child: Icon(
+        Icons.add,
+        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
       ),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.add, color: widget.accentColor),
-                const SizedBox(width: AppSizes.sm),
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    decoration: InputDecoration(
-                      hintText: widget.hintText,
-                      border: InputBorder.none,
-                      hintStyle: const TextStyle(color: AppColors.textHint),
-                    ),
-                    onSubmitted: (_) => _handleSubimit(),
-                    onTap: () {}, // Xóa setState không dùng
-                  ),
-                ),
-                if (_controller.text.isNotEmpty)
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_upward_rounded,
-                      color: widget.accentColor,
-                    ),
-                    onPressed: _handleSubimit,
-                  ),
-              ],
+    );
+  }
+
+  void _showAddTaskBar(BuildContext context) {
+    final isDark = context.isDarkMode;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.md,
+          vertical: AppSizes.sm,
+        ),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
           ],
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.add, color: widget.accentColor),
+                  const SizedBox(width: AppSizes.sm),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      decoration: InputDecoration(
+                        hintText: widget.hintText,
+                        border: InputBorder.none,
+                        hintStyle: const TextStyle(color: AppColors.textHint),
+                      ),
+                      onSubmitted: (_) => _handleSubimit(),
+                      onTap: () {}, // Xóa setState không dùng
+                    ),
+                  ),
+                  if (_controller.text.isNotEmpty)
+                    IconButton(
+                      icon: Icon(
+                        Icons.arrow_upward_rounded,
+                        color: widget.accentColor,
+                      ),
+                      onPressed: _handleSubimit,
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
