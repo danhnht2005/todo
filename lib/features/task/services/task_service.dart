@@ -10,10 +10,6 @@ class TaskService {
 
   String get _userId => _client.auth.currentUser!.id;
 
-  // ═══════════════════════════════════════════
-  // TASKS
-  // ═══════════════════════════════════════════
-
   /// Lấy tất cả tasks của user (kèm steps)
   Future<List<TaskModel>> getTasks() async {
     final response = await _client
