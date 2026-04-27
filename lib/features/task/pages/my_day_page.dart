@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/widgets/add_task_bar.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../features/task/widgets/task_list.dart';
 import '../../../features/task/providers/task_provider.dart';
@@ -80,6 +81,15 @@ class _MyDayPageState extends State<MyDayPage> {
               return TaskList(incomplete: incomplete, completed: completed);
             },
           ),
+        ),
+
+        // Add Task Bar
+        AddTaskBar(
+          onSubmit: (title) {
+            context.read<TaskProvider>().addTask(title: title, isMyDay: true);
+          },
+          accentColor: AppColors.myDay,
+          hintText: 'Thêm vào My Day',
         ),
       ],
     );
