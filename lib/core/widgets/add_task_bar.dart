@@ -24,12 +24,6 @@ class _AddTaskBarState extends State<AddTaskBar> {
   final FocusNode _focusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    _controller.addListener(() => setState(() {}));
-  }
-
-  @override
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
@@ -93,6 +87,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
+                      autofocus: true,
                       decoration: InputDecoration(
                         hintText: widget.hintText,
                         border: InputBorder.none,
@@ -102,14 +97,13 @@ class _AddTaskBarState extends State<AddTaskBar> {
                       onTap: () {}, // Xóa setState không dùng
                     ),
                   ),
-                  if (_controller.text.isNotEmpty)
-                    IconButton(
-                      icon: Icon(
-                        Icons.arrow_upward_rounded,
-                        color: widget.accentColor,
-                      ),
-                      onPressed: _handleSubimit,
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_upward_rounded,
+                      color: widget.accentColor,
                     ),
+                    onPressed: _handleSubimit,
+                  ),
                 ],
               ),
             ],
