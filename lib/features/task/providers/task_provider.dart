@@ -105,6 +105,7 @@ class TaskProvider extends ChangeNotifier {
     bool isImportant = false,
     String? listId,
     String? dueDate,
+    String? reminderAt,
   }) async {
     try {
       await _taskService.createTask(
@@ -113,6 +114,7 @@ class TaskProvider extends ChangeNotifier {
         isImportant: isImportant,
         listId: listId,
         dueDate: dueDate,
+        reminderAt: reminderAt,
       );
       await _reload();
     } catch (e) {
