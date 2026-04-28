@@ -7,6 +7,12 @@ import '../../../features/task/providers/task_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../core/widgets/empty_state_widget.dart';
+import '../../../features/task/providers/task_provider.dart';
+import '../../../features/task/widgets/task_list.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/utils/extensions.dart';
 
 /// PlannedPage — Trang hiển thị task có due date
 class PlannedPage extends StatefulWidget {
@@ -27,59 +33,58 @@ class _PlannedPageState extends State<PlannedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
-        Column(
-          children: [
-            // Header
-            const _PlannedHeader(),
+        // Header
+        _PlannedHeader(),
 
-            // Task List
-            Expanded(
-              child: Consumer<TaskProvider>(
-                builder: (context, provider, child) {
-                  if (provider.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (provider.errorMessage != null) {
-                    return Center(child: Text(provider.errorMessage!));
-                  }
+        Expanded(
+          child: Consumer<TaskProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (provider.errorMessage != null) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: AppColors.error,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(provider.errorMessage!, textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => provider.loadTasks(hasDueDate: true),
+                        child: const Text('Thử lại'),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-                  final incomplete = provider.tasks
-                      .where((t) => !t.isCompleted)
-                      .toList();
-                  final completed = provider.tasks
-                      .where((t) => t.isCompleted)
-                      .toList();
+              final incomplete = provider.tasks
+                  .where((t) => !t.isCompleted)
+                  .toList();
+              final completed = provider.tasks
+                  .where((t) => t.isCompleted)
+                  .toList();
 
-                  if (incomplete.isEmpty && completed.isEmpty) {
-                    return const EmptyStateWidget(
-                      icon: Icons.calendar_month_outlined,
-                      title: 'Chưa có kế hoạch nào',
-                      subtitle: 'Nhấn + để thêm tác vụ có ngày hạn.',
-                      iconColor: AppColors.planned,
-                    );
-                  }
+              if (incomplete.isEmpty && completed.isEmpty) {
+                return const EmptyStateWidget(
+                  icon: Icons.calendar_month_outlined,
+                  title: 'Không có task đã lên kế hoạch',
+                  subtitle:
+                      'Thêm công việc bạn muốn hoàn thành hôm nay.\nNhấn + ở bên dưới để bắt đầu.',
+                  iconColor: AppColors.planned,
+                );
+              }
 
-                  return TaskList(incomplete: incomplete, completed: completed);
-                },
-              ),
-            ),
-          ],
-        ),
-        Positioned(
-          right: 20,
-          bottom: 50,
-          child: AddTaskBar(
-            onSubmit: (title) {
-              final today = DateTime.now().toIso8601String().split('T').first;
-              context.read<TaskProvider>().addTask(
-                title: title,
-                dueDate: today,
-              );
+              return TaskList(incomplete: incomplete, completed: completed);
             },
-            accentColor: AppColors.planned,
-            hintText: 'Thêm tác vụ có kế hoạch',
           ),
         ),
       ],
