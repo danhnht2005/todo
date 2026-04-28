@@ -68,15 +68,15 @@ class _PlannedPageState extends State<PlannedPage> {
           ],
         ),
         Positioned(
-          right: 30,
-          bottom: 30,
+          right: 20,
+          bottom: 50,
           child: AddTaskBar(
             onSubmit: (title) {
               final today = DateTime.now().toIso8601String().split('T').first;
               context.read<TaskProvider>().addTask(
-                    title: title,
-                    dueDate: today,
-                  );
+                title: title,
+                dueDate: today,
+              );
             },
             accentColor: AppColors.planned,
             hintText: 'Thêm tác vụ có kế hoạch',
@@ -125,9 +125,7 @@ class _PlannedHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
-              color: isDark
-                  ? AppColors.textPrimaryDark
-                  : AppColors.textPrimary,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
             ),
           ),
         ],

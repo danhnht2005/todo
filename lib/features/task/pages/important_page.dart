@@ -68,8 +68,8 @@ class _ImportantPageState extends State<ImportantPage> {
           ],
         ),
         Positioned(
-          right: 30,
-          bottom: 30,
+          right: 20,
+          bottom: 50,
           child: AddTaskBar(
             onSubmit: (title) {
               context.read<TaskProvider>().addTask(

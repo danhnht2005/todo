@@ -92,8 +92,8 @@ class _MyDayPageState extends State<MyDayPage> {
           ],
         ),
         Positioned(
-          right: 30,
-          bottom: 30,
+          right: 20,
+          bottom: 50,
           child: AddTaskBar(
             onSubmit: (title) {
               context.read<TaskProvider>().addTask(title: title, isMyDay: true);
