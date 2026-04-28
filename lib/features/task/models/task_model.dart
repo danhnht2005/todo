@@ -108,6 +108,7 @@ class TaskModel {
     bool isMyDay = false,
     String? listId,
     String? dueDate,
+    String? reminderAt,
   }) {
     return {
       'user_id': userId,
@@ -117,6 +118,7 @@ class TaskModel {
       'is_my_day': isMyDay,
       'list_id': listId,
       'due_date': dueDate,
+      'reminder_at': reminderAt,
     };
   }
 
