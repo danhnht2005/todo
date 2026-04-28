@@ -6,7 +6,6 @@ import '../utils/extensions.dart';
 
 class TaskTile extends StatelessWidget {
   final TaskModel task;
-  // final Color accentColor;
   final VoidCallback onToggle;
   final VoidCallback onToggleImportant;
   final VoidCallback onDelete;
@@ -15,7 +14,6 @@ class TaskTile extends StatelessWidget {
   const TaskTile({
     super.key,
     required this.task,
-    // required this.accentColor,
     required this.onToggle,
     required this.onToggleImportant,
     required this.onDelete,
@@ -35,74 +33,81 @@ class TaskTile extends StatelessWidget {
         color: AppColors.error,
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      onDismissed: (_) => onDelete(),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.md,
-            vertical: AppSizes.sm,
-          ),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isDark ? AppColors.dividerDark : AppColors.divider,
-                width: 0.5,
+      // onDismissed: (_) => onDelete(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.sm,
+          vertical: 2,
+        ),
+        child: Material(
+          color: isDark ? AppColors.surfaceDark : Colors.white,
+          borderRadius: BorderRadius.circular(AppSizes.sm),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppSizes.sm),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.md,
+                vertical: AppSizes.sm,
+              ),
+              child: Row(
+                children: [
+                  // Checkbox
+                  IconButton(
+                    icon: Icon(
+                      task.isCompleted
+                          ? Icons.check_circle
+                          : Icons.circle_outlined,
+                      color:
+                          task.isCompleted ? AppColors.checkGreen : Colors.grey,
+                    ),
+                    onPressed: onToggle,
+                  ),
+                  const SizedBox(width: AppSizes.xs),
+                  // Task Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          task.title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            decoration: task.isCompleted
+                                ? TextDecoration.lineThrough
+                                : null,
+                            color: task.isCompleted
+                                ? AppColors.textHint
+                                : (isDark
+                                    ? AppColors.textPrimaryDark
+                                    : AppColors.textPrimary),
+                          ),
+                        ),
+                        if (task.totalStepCount > 0)
+                          Text(
+                            '${task.completedStepCount} của ${task.totalStepCount}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textHint,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  // Important Star
+                  IconButton(
+                    icon: Icon(
+                      task.isImportant ? Icons.star : Icons.star_border,
+                      color: task.isImportant
+                          ? AppColors.starYellow
+                          : AppColors.textHint,
+                    ),
+                    onPressed: onToggleImportant,
+                  ),
+                ],
               ),
             ),
-          ),
-          child: Row(
-            children: [
-              // Checkbox
-              IconButton(
-                icon: Icon(
-                  task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
-                  color: task.isCompleted ? AppColors.checkGreen : Colors.grey,
-                ),
-                onPressed: onToggle,
-              ),
-              const SizedBox(width: AppSizes.xs),
-              // Task Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      task.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        decoration: task.isCompleted
-                            ? TextDecoration.lineThrough
-                            : null,
-                        color: task.isCompleted
-                            ? AppColors.textHint
-                            : (isDark
-                                  ? AppColors.textPrimaryDark
-                                  : AppColors.textPrimary),
-                      ),
-                    ),
-                    if (task.totalStepCount > 0)
-                      Text(
-                        '${task.completedStepCount} của ${task.totalStepCount}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textHint,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              // Important Star
-              IconButton(
-                icon: Icon(
-                  task.isImportant ? Icons.star : Icons.star_border,
-                  color: task.isImportant
-                      ? AppColors.starYellow
-                      : AppColors.textHint,
-                ),
-                onPressed: onToggleImportant,
-              ),
-            ],
           ),
         ),
       ),

@@ -61,6 +61,7 @@ class TaskService {
     bool isImportant = false,
     String? listId,
     String? dueDate,
+    String? reminderAt,
   }) async {
     final response = await _client
         .from('tasks')
@@ -72,6 +73,7 @@ class TaskService {
             isImportant: isImportant,
             listId: listId,
             dueDate: dueDate,
+            reminderAt: reminderAt,
           ),
         )
         .select('*, steps(*)')
