@@ -42,7 +42,28 @@ class _AllTasksPageState extends State<AllTasksPage> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (provider.errorMessage != null) {
-                    return Center(child: Text(provider.errorMessage!));
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: AppColors.error,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            provider.errorMessage!,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => provider.loadTasks(),
+                            child: const Text('Thử lại'),
+                          ),
+                        ],
+                      ),
+                    );
                   }
 
                   final incomplete = provider.tasks
