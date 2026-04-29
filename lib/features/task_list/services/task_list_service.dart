@@ -23,6 +23,18 @@ class TaskListService {
     }).toList();
   }
 
+  /// Lấy chi tiết 1 list theo id
+  Future<TaskListModel> getListById(String listId) async {
+    final response = await _client
+        .from('task_lists')
+        .select()
+        .eq('id', listId)
+        .eq('user_id', _userId)
+        .single();
+
+    return TaskListModel.fromJson(response);
+  }
+
   /// Tạo list mới
   Future<TaskListModel> createList({required String title}) async {
     final response = await _client

@@ -11,10 +11,12 @@ class TaskListProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   List<TaskListModel> _lists = [];
+  TaskListModel? _selectedTaskList;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   List<TaskListModel> get lists => _lists;
+  TaskListModel? get selectedTaskList => _selectedTaskList;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -24,6 +26,19 @@ class TaskListProvider extends ChangeNotifier {
   void _setError(String message) {
     _errorMessage = message;
     notifyListeners();
+  }
+
+  // Load task list detail by id
+  Future<void> loadTaskListDetail(String listId) async {
+    _setLoading(true);
+    _errorMessage = null;
+    try {
+      _selectedTaskList = await _repository.getListById(listId);
+    } catch (e) {
+      _errorMessage = 'Không thể tải chi tiết danh sách: ${e.toString()}';
+    } finally {
+      _setLoading(false);
+    }
   }
 
   // Load all list

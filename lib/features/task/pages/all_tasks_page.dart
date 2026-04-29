@@ -96,7 +96,6 @@ class _AllTasksPageState extends State<AllTasksPage> {
               context.read<TaskProvider>().addTask(title: title);
             },
             accentColor: AppColors.allTasks,
-            hintText: 'Thêm tác vụ',
           ),
         ),
       ],

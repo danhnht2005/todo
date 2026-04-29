@@ -1,28 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../features/task/widgets/task_list.dart';
+import '../../../features/task_list/providers/task_list_provider.dart';
 import '../../../core/widgets/add_task_bar.dart';
 import '../../../core/widgets/empty_state_widget.dart';
-import '../providers/task_provider.dart';
+import '../../../features/task/widgets/task_list.dart';
+import '../../../features/task/providers/task_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
 
-/// ImportantPage — Trang hiển thị task quan trọng
-class ImportantPage extends StatefulWidget {
-  const ImportantPage({super.key});
+class CustomListPage extends StatefulWidget {
+  final String id;
+
+  const CustomListPage({super.key, required this.id});
 
   @override
-  State<ImportantPage> createState() => _ImportantPageState();
+  State<CustomListPage> createState() => _CustomListPageState();
 }
 
-class _ImportantPageState extends State<ImportantPage> {
+class _CustomListPageState extends State<CustomListPage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TaskProvider>().loadTasks(isImportant: true);
+      _loadData();
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomListPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.id != widget.id) {
+      _loadData();
+    }
+  }
+
+  void _loadData() {
+    context.read<TaskProvider>().loadTasks(listId: widget.id);
+    context.read<TaskListProvider>().loadTaskListDetail(widget.id);
   }
 
   @override
@@ -31,10 +46,10 @@ class _ImportantPageState extends State<ImportantPage> {
       children: [
         Column(
           children: [
-            // Header
-            const _ImportantHeader(),
+            // ─── Header ───
+            _CustomListHeader(),
 
-            // Task List
+            // ─── Task List ───
             Expanded(
               child: Consumer<TaskProvider>(
                 builder: (context, provider, child) {
@@ -59,7 +74,7 @@ class _ImportantPageState extends State<ImportantPage> {
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () =>
-                                provider.loadTasks(isImportant: true),
+                                provider.loadTasks(listId: widget.id),
                             child: const Text('Thử lại'),
                           ),
                         ],
@@ -76,10 +91,10 @@ class _ImportantPageState extends State<ImportantPage> {
 
                   if (incomplete.isEmpty && completed.isEmpty) {
                     return const EmptyStateWidget(
-                      icon: Icons.star_outline_rounded,
-                      title: 'Không có task quan trọng',
-                      subtitle: 'Đánh dấu ⭐ để thêm task vào đây.',
-                      iconColor: AppColors.important,
+                      icon: Icons.folder_open_rounded,
+                      title: 'Chưa có task trong danh sách này',
+                      subtitle: 'Nhấn + bên dưới để thêm task mới.',
+                      iconColor: AppColors.primary,
                     );
                   }
 
@@ -96,10 +111,10 @@ class _ImportantPageState extends State<ImportantPage> {
             onSubmit: (title) {
               context.read<TaskProvider>().addTask(
                 title: title,
-                isImportant: true,
+                listId: widget.id,
               );
             },
-            accentColor: AppColors.important,
+            accentColor: AppColors.customList,
           ),
         ),
       ],
@@ -107,45 +122,54 @@ class _ImportantPageState extends State<ImportantPage> {
   }
 }
 
-class _ImportantHeader extends StatelessWidget {
-  const _ImportantHeader();
-
+class _CustomListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        AppSizes.xxl,
-        AppSizes.lg,
-        AppSizes.xxl,
-        AppSizes.md,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.important.withValues(alpha: isDark ? 0.2 : 0.08),
-            Colors.transparent,
-          ],
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.star_rounded, color: AppColors.important, size: 28),
-          const SizedBox(width: AppSizes.md),
-          Text(
-            'Quan trọng',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+    return Consumer<TaskListProvider>(
+      builder: (context, provider, child) {
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(
+            AppSizes.xxl,
+            AppSizes.lg,
+            AppSizes.xxl,
+            AppSizes.md,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary.withValues(alpha: isDark ? 0.2 : 0.08),
+                Colors.transparent,
+              ],
             ),
           ),
-        ],
-      ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.list_rounded,
+                color: AppColors.primary,
+                size: 28,
+              ),
+              const SizedBox(width: AppSizes.md),
+              Expanded(
+                child: Text(
+                  provider.selectedTaskList?.title ?? 'Danh sách tùy chỉnh',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

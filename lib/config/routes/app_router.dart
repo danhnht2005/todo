@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../features/task/pages/custom_list_page.dart';
 import '../../features/task/pages/all_tasks_page.dart';
 import '../../features/task/pages/planned_page.dart';
 import '../../features/task/pages/important_page.dart';
@@ -55,6 +56,13 @@ class AppRouter {
           GoRoute(
             path: '/all-tasks',
             builder: (context, state) => const AllTasksPage(),
+          ),
+          GoRoute(
+            path: '/custom-list/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return CustomListPage(id: id);
+            },
           ),
         ],
       ),

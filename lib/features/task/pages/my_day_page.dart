@@ -99,7 +99,6 @@ class _MyDayPageState extends State<MyDayPage> {
               context.read<TaskProvider>().addTask(title: title, isMyDay: true);
             },
             accentColor: AppColors.myDay,
-            hintText: 'Thêm vào My Day',
           ),
         ),
       ],
