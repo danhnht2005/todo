@@ -6,13 +6,11 @@ import '../utils/extensions.dart';
 class AddTaskBar extends StatefulWidget {
   final Function(String) onSubmit;
   final Color accentColor;
-  final String hintText;
 
   const AddTaskBar({
     super.key,
     required this.onSubmit,
     this.accentColor = AppColors.primary,
-    this.hintText = 'Thêm tác vụ',
   });
 
   @override
@@ -89,7 +87,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
                       focusNode: _focusNode,
                       autofocus: true,
                       decoration: InputDecoration(
-                        hintText: widget.hintText,
+                        hintText: "Thêm tác vụ",
                         border: InputBorder.none,
                         hintStyle: const TextStyle(color: AppColors.textHint),
                       ),

@@ -33,7 +33,7 @@ class TaskTile extends StatelessWidget {
         color: AppColors.error,
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      // onDismissed: (_) => onDelete(),
+      onDismissed: (_) => onDelete(),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSizes.sm,
@@ -59,8 +59,9 @@ class TaskTile extends StatelessWidget {
                       task.isCompleted
                           ? Icons.check_circle
                           : Icons.circle_outlined,
-                      color:
-                          task.isCompleted ? AppColors.checkGreen : Colors.grey,
+                      color: task.isCompleted
+                          ? AppColors.checkGreen
+                          : Colors.grey,
                     ),
                     onPressed: onToggle,
                   ),
@@ -80,8 +81,8 @@ class TaskTile extends StatelessWidget {
                             color: task.isCompleted
                                 ? AppColors.textHint
                                 : (isDark
-                                    ? AppColors.textPrimaryDark
-                                    : AppColors.textPrimary),
+                                      ? AppColors.textPrimaryDark
+                                      : AppColors.textPrimary),
                           ),
                         ),
                         if (task.totalStepCount > 0)

@@ -5,6 +5,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'features/task/services/task_service.dart';
 import 'features/task/providers/task_provider.dart';
+import 'features/task_list/services/task_list_service.dart';
+import 'features/task_list/providers/task_list_provider.dart';
 import 'config/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/providers/auth_provider.dart';
@@ -47,6 +49,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) =>
               TaskProvider(taskService: context.read<TaskService>()),
+        ),
+        Provider(create: (_) => TaskListService()),
+        ChangeNotifierProvider(
+          create: (context) =>
+              TaskListProvider(repository: context.read<TaskListService>()),
         ),
       ],
       child: MaterialApp.router(

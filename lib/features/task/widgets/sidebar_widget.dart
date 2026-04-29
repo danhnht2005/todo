@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'build_new_list_button.dart';
+import 'build_custom_list_item.dart';
+import 'build_smart_list_item.dart';
+import 'build_user_header_sidebar.dart';
+import '../../task_list/providers/task_list_provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
 import '../../auth/services/auth_service.dart';
 import '../../auth/providers/auth_provider.dart';
 
-/// Sidebar Navigation
-class SidebarWidget extends StatelessWidget {
+/// Sidebar
+class SidebarWidget extends StatefulWidget {
   const SidebarWidget({super.key});
+
+  @override
+  State<SidebarWidget> createState() => _SidebarWidgetState();
+}
+
+class _SidebarWidgetState extends State<SidebarWidget> {
+  @override
+  void initState() {
+    super.initState();
+    // Load data lần đầu khi vào home
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TaskListProvider>().loadTaskLists();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +41,7 @@ class SidebarWidget extends StatelessWidget {
         child: Column(
           children: [
             // User Profile Header
-            _buildUserHeader(isDark, authRepo),
+            buildUserHeaderSideBar(isDark, authRepo),
             const SizedBox(height: AppSizes.sm),
 
             // Smart Lists
@@ -30,28 +49,28 @@ class SidebarWidget extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm),
                 children: [
-                  _buildSmartListItem(
+                  buildSmartListItem(
                     context: context,
                     icon: Icons.wb_sunny_rounded,
                     title: 'My Day',
                     color: AppColors.myDay,
                     routeName: 'home',
                   ),
-                  _buildSmartListItem(
+                  buildSmartListItem(
                     context: context,
                     icon: Icons.star_rounded,
                     title: 'Quan trọng',
                     color: AppColors.important,
                     routeName: 'important',
                   ),
-                  _buildSmartListItem(
+                  buildSmartListItem(
                     context: context,
                     icon: Icons.calendar_month_rounded,
                     title: 'Đã lên kế hoạch',
                     color: AppColors.planned,
                     routeName: 'planned',
                   ),
-                  _buildSmartListItem(
+                  buildSmartListItem(
                     context: context,
                     icon: Icons.home_rounded,
                     title: 'Tất cả',
@@ -88,8 +107,34 @@ class SidebarWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // Custom Lists
+                  Consumer<TaskListProvider>(
+                    builder: (context, taskListProvider, child) {
+                      final lists = taskListProvider.lists;
+                      if (lists.isNotEmpty) {
+                        return Column(
+                          children: lists
+                              .map(
+                                (list) => buildCustomListItem(
+                                  context: context,
+                                  list: list,
+                                ),
+                              )
+                              .toList(),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ],
               ),
+            ),
+
+            // New List Button
+            Padding(
+              padding: const EdgeInsets.all(AppSizes.sm),
+              child: buildNewListButton(context, isDark),
             ),
 
             // Logout Button
@@ -103,143 +148,6 @@ class SidebarWidget extends StatelessWidget {
               child: _buildLogoutButton(context, isDark),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUserHeader(bool isDark, AuthService authRepo) {
-    final name = authRepo.displayName.isNotEmpty
-        ? authRepo.displayName
-        : 'Người dùng';
-    final email = authRepo.email;
-    final initials = name.isNotEmpty
-        ? name
-              .split(' ')
-              .map((w) => w.isNotEmpty ? w[0] : '')
-              .take(2)
-              .join()
-              .toUpperCase()
-        : 'U';
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-        AppSizes.lg,
-        AppSizes.lg,
-        AppSizes.lg,
-        AppSizes.sm,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: AppSizes.avatarSize,
-            height: AppSizes.avatarSize,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [AppColors.primary, AppColors.primaryLight],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSizes.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: isDark
-                        ? AppColors.textPrimaryDark
-                        : AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (email.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    email,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.textSecondary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSmartListItem({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required Color color,
-    required String routeName,
-  }) {
-    final isDark = context.isDarkMode;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.pop(context); // Đóng Drawer trước
-            context.go('/$routeName');
-          },
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.md,
-              vertical: AppSizes.md,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, color: color, size: AppSizes.iconMd),
-                const SizedBox(width: AppSizes.md),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? AppColors.textPrimaryDark
-                          : AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );

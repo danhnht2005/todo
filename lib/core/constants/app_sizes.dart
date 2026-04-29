@@ -21,4 +21,8 @@ class AppSizes {
   static double sidebarWidth(BuildContext context) {
     return MediaQuery.sizeOf(context).width * 0.75;
   }
+
+  static double dialogWidth(BuildContext context) {
+    return MediaQuery.sizeOf(context).width * 0.8;
+  }
 }
