@@ -6,7 +6,7 @@ class TaskListProvider extends ChangeNotifier {
   final TaskListService _repository;
 
   TaskListProvider({required TaskListService repository})
-      : _repository = repository;
+    : _repository = repository;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -26,6 +26,7 @@ class TaskListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Load all list
   Future<void> loadTaskLists() async {
     _setLoading(true);
     _errorMessage = null;
@@ -38,42 +39,27 @@ class TaskListProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createTaskList({
-    required String title,
-    String iconName = 'list',
-    String colorHex = '#2564CF',
-  }) async {
+  // Create list
+  Future<void> createTaskList({required String title}) async {
     try {
-      await _repository.createList(
-        title: title,
-        iconName: iconName,
-        colorHex: colorHex,
-      );
+      await _repository.createList(title: title);
       await loadTaskLists();
     } catch (e) {
       _setError('Không thể tạo danh sách: ${e.toString()}');
     }
   }
 
-  Future<void> updateTaskList({
-    required String listId,
-    String? title,
-    String? iconName,
-    String? colorHex,
-  }) async {
+  // Update list
+  Future<void> updateTaskList({required String listId, String? title}) async {
     try {
-      await _repository.updateList(
-        listId: listId,
-        title: title,
-        iconName: iconName,
-        colorHex: colorHex,
-      );
+      await _repository.updateList(listId: listId, title: title);
       await loadTaskLists();
     } catch (e) {
       _setError('Không thể cập nhật: ${e.toString()}');
     }
   }
 
+  // Delete list
   Future<void> deleteTaskList(String listId) async {
     try {
       await _repository.deleteList(listId);

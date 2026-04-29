@@ -10,7 +10,7 @@ class TaskListService {
 
   String get _userId => _client.auth.currentUser!.id;
 
-  /// Lấy tất cả custom lists + đếm số task chưa hoàn thành
+  /// Lấy tất cả custom lists
   Future<List<TaskListModel>> getLists() async {
     final listsResponse = await _client
         .from('task_lists')
