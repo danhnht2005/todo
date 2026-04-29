@@ -1,7 +1,7 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'build_new_list_button.dart';
 import 'build_custom_list_item.dart';
 import 'build_smart_list_item.dart';
 import 'build_user_header_sidebar.dart';
@@ -134,7 +134,7 @@ class _SidebarWidgetState extends State<SidebarWidget> {
             // New List Button
             Padding(
               padding: const EdgeInsets.all(AppSizes.sm),
-              child: _buildNewListButton(context, isDark),
+              child: buildNewListButton(context, isDark),
             ),
 
             // Logout Button
@@ -148,47 +148,6 @@ class _SidebarWidgetState extends State<SidebarWidget> {
               child: _buildLogoutButton(context, isDark),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNewListButton(BuildContext context, bool isDark) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-          _showCreateListDialog(context);
-        },
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.md,
-            vertical: AppSizes.md,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.add_rounded,
-                color: isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondary,
-                size: AppSizes.iconMd,
-              ),
-              const SizedBox(width: AppSizes.md),
-              Text(
-                'Danh sách mới',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: isDark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -230,90 +189,6 @@ class _SidebarWidgetState extends State<SidebarWidget> {
           ),
         ),
       ),
-    );
-  }
-
-  void _showCreateListDialog(BuildContext context) {
-    final controller = TextEditingController();
-
-    // 1. LẤY DATA TỪ CONTEXT CỤC BỘ TRƯỚC KHI GỌI BOT TOAST
-    final isDark = context.isDarkMode; // Extention của bạn
-    final taskProvider = context.read<TaskListProvider>();
-
-    BotToast.showAnimationWidget(
-      clickClose: true, // Bấm ra vùng tối để đóng dialog
-      onlyOne: true, // Đảm bảo chỉ hiện 1 dialog này tại 1 thời điểm
-      crossPage: false,
-      backButtonBehavior:
-          BackButtonBehavior.close, // Bấm nút Back trên Android sẽ đóng
-      backgroundColor: Colors.black54, // Màu nền tối mờ
-      animationDuration: const Duration(milliseconds: 200),
-      wrapToastAnimation: (controller, cancel, child) {
-        return FadeTransition(opacity: controller, child: child);
-      },
-      toastBuilder: (cancelFunc) {
-        // Dùng Material và Center để căn giữa AlertDialog trong Overlay
-        return Center(
-          child: Material(
-            color: Colors.transparent,
-            child: AlertDialog(
-              backgroundColor: isDark
-                  ? AppColors.surfaceDark
-                  : AppColors.surfaceLight,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-              ),
-              title: Text(
-                'Tạo danh sách mới',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: isDark
-                      ? AppColors.textPrimaryDark
-                      : AppColors.textPrimary,
-                ),
-              ),
-              content: TextField(
-                controller: controller,
-                autofocus: true,
-                decoration: const InputDecoration(hintText: 'Tên danh sách...'),
-              ),
-              actions: [
-                TextButton(
-                  // 2. DÙNG cancelFunc ĐỂ ĐÓNG THAY VÌ Navigator.pop
-                  onPressed: cancelFunc,
-                  child: const Text('Hủy'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (controller.text.trim().isNotEmpty) {
-                      // Gọi Provider đã được khởi tạo ở trên
-                      taskProvider.createTaskList(
-                        title: controller.text.trim(),
-                      );
-
-                      cancelFunc(); // Đóng dialog
-
-                      // 3. Có thể dùng luôn BotToast để hiện thông báo thay cho SnackBar
-                      BotToast.showText(
-                        text: 'Đã tạo: ${controller.text.trim()}',
-                        align: const Alignment(
-                          0,
-                          0.8,
-                        ), // Hiển thị ở gần cuối màn hình
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(80, 40),
-                  ),
-                  child: const Text('Tạo'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
