@@ -59,9 +59,11 @@ class _AddTaskBarState extends State<AddTaskBar> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.md,
-          vertical: AppSizes.sm,
+        padding: EdgeInsets.only(
+          left: AppSizes.md,
+          right: AppSizes.md,
+          top: AppSizes.sm,
+          bottom: AppSizes.sm + MediaQuery.of(context).viewInsets.bottom,
         ),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
