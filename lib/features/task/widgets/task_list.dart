@@ -113,7 +113,7 @@ class TaskListState extends State<TaskList> {
       backgroundColor: Colors.transparent,
       builder: (_) => ChangeNotifierProvider.value(
         value: context.read<TaskProvider>(),
-        child: TaskDetailPage(),
+        child: TaskDetailPage(task: task),
       ),
     );
   }
