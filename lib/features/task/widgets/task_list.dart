@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../pages/task_detail_page.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
@@ -43,7 +44,7 @@ class TaskListState extends State<TaskList> {
                   isImportant: !task.isImportant,
                 ),
             onDelete: () => context.read<TaskProvider>().deleteTask(task.id),
-            onTap: () => {},
+            onTap: () => _showDetail(task),
           ),
         ),
         if (widget.completed.isNotEmpty) ...[
@@ -102,6 +103,18 @@ class TaskListState extends State<TaskList> {
         ],
         const SizedBox(height: 100),
       ],
+    );
+  }
+
+  void _showDetail(TaskModel task) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ChangeNotifierProvider.value(
+        value: context.read<TaskProvider>(),
+        child: TaskDetailPage(),
+      ),
     );
   }
 }
