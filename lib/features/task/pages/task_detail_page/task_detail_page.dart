@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'toggle_due_date.dart';
 import 'build_note_section.dart';
 import 'build_title_task_detail.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../providers/task_provider.dart';
+import 'toggle_my_day.dart';
 
 /// TaskDetailPage — Bottom sheet chi tiết task
 class TaskDetailPage extends StatefulWidget {
@@ -43,6 +45,12 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
       ),
       body: Consumer<TaskProvider>(
         builder: (context, provider, child) {
+          if (provider.task == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final task = provider.task!;
+
           return Column(
             children: [
               Expanded(
@@ -55,12 +63,22 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                   ),
                   children: [
                     // Task Title + Checkbox
-                    BuildTitleTaskDetail(task: provider.task!),
+                    BuildTitleTaskDetail(task: task),
 
                     const SizedBox(height: AppSizes.xl),
 
+                    //step
+                    const SizedBox(height: AppSizes.md),
+
+                    // my day
+                    ToggleMyDay(task: task),
+                    // due date
+                    ToggleDueDate(task: task),
+
+                    const Divider(height: 32),
+
                     // Note
-                    BuildNoteTaskSection(task: provider.task!),
+                    BuildNoteTaskSection(task: task),
                   ],
                 ),
               ),
