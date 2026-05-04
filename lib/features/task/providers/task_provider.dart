@@ -10,10 +10,12 @@ class TaskProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   List<TaskModel> _tasks = [];
+  TaskModel? _task;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   List<TaskModel> get tasks => _tasks;
+  TaskModel? get task => _task;
 
   // Lưu lại filter hiện tại để reload sau khi thao tác
   bool? _currentIsMyDay;
@@ -76,6 +78,19 @@ class TaskProvider extends ChangeNotifier {
       _tasks = await _taskService.getTasks();
     } catch (e) {
       _errorMessage = 'Không thể tải danh sách: ${e.toString()}';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Load task theo id
+  Future<void> loadTaskDetail(String id) async {
+    _setLoading(true);
+    _errorMessage = null;
+    try {
+      _task = await _taskService.getTaskById(id);
+    } catch (e) {
+      _errorMessage = 'Không thể tải chi tiết tác vụ: ${e.toString()}';
     } finally {
       _setLoading(false);
     }
