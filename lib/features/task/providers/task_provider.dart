@@ -108,6 +108,16 @@ class TaskProvider extends ChangeNotifier {
           listId: _currentListId,
         );
       }
+
+      // Cập nhật lại _task nếu đang xem chi tiết
+      if (_task != null) {
+        try {
+          _task = await _taskService.getTaskById(_task!.id);
+        } catch (_) {
+          _task = null; // Task có thể đã bị xóa
+        }
+      }
+
       notifyListeners();
     } catch (e) {
       _setError('Lỗi reload: ${e.toString()}');

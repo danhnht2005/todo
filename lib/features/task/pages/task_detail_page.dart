@@ -18,6 +18,7 @@ class TaskDetailPage extends StatefulWidget {
 
 class _TaskDetailPageState extends State<TaskDetailPage> {
   final _titleController = TextEditingController();
+  bool _isEditingTitle = false;
 
   @override
   void initState() {
@@ -80,7 +81,8 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                   padding: const EdgeInsets.all(AppSizes.xxl),
                   children: [
                     // Task Title + Checkbox
-                    Text(provider.task!.title),
+                    _buildTitleRow(isDark, provider.task!),
+
                     const SizedBox(height: AppSizes.xl),
                   ],
                 ),
@@ -89,6 +91,108 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
           ),
         );
       },
+    );
+  }
+
+  void _saveTitle(TaskModel task) {
+    final newTitle = _titleController.text.trim();
+    if (newTitle.isNotEmpty && newTitle != task.title) {
+      context.read<TaskProvider>().updateTask(taskId: task.id, title: newTitle);
+    }
+    setState(() => _isEditingTitle = false);
+  }
+
+  Widget _buildTitleRow(bool isDark, TaskModel task) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Checkbox
+        GestureDetector(
+          onTap: () {
+            context.read<TaskProvider>().toggleComplete(
+              taskId: task.id,
+              isCompleted: !task.isCompleted,
+            );
+          },
+          child: Container(
+            width: 24,
+            height: 24,
+            margin: const EdgeInsets.only(top: 2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: task.isCompleted ? AppColors.primary : Colors.transparent,
+              border: Border.all(
+                color: task.isCompleted
+                    ? AppColors.primary
+                    : AppColors.textHint,
+                width: 1.5,
+              ),
+            ),
+            child: task.isCompleted
+                ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
+                : null,
+          ),
+        ),
+        const SizedBox(width: AppSizes.md),
+        // Title — tap to edit
+        Expanded(
+          child: _isEditingTitle
+              ? TextField(
+                  controller: _titleController,
+                  autofocus: true,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimary,
+                  ),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                    filled: false,
+                  ),
+                  onSubmitted: (_) => _saveTitle(task),
+                  onEditingComplete: () => _saveTitle(task),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    _titleController.text = task.title;
+                    setState(() => _isEditingTitle = true);
+                  },
+                  child: Text(
+                    task.title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.textPrimaryDark
+                          : AppColors.textPrimary,
+                      decoration: task.isCompleted
+                          ? TextDecoration.lineThrough
+                          : null,
+                    ),
+                  ),
+                ),
+        ),
+        // Star
+        GestureDetector(
+          onTap: () {
+            context.read<TaskProvider>().toggleImportant(
+              taskId: task.id,
+              isImportant: !task.isImportant,
+            );
+          },
+          child: Icon(
+            task.isImportant ? Icons.star_rounded : Icons.star_outline_rounded,
+            color: task.isImportant ? AppColors.starYellow : AppColors.textHint,
+            size: 24,
+          ),
+        ),
+      ],
     );
   }
 }
