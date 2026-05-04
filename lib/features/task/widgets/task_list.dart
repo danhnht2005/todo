@@ -44,7 +44,7 @@ class TaskListState extends State<TaskList> {
                   isImportant: !task.isImportant,
                 ),
             onDelete: () => context.read<TaskProvider>().deleteTask(task.id),
-            onTap: () => _showDetail(task),
+            onTap: () => _showDetail(task.id),
           ),
         ),
         if (widget.completed.isNotEmpty) ...[
@@ -97,7 +97,7 @@ class TaskListState extends State<TaskList> {
                     ),
                 onDelete: () =>
                     context.read<TaskProvider>().deleteTask(task.id),
-                onTap: () => {},
+                onTap: () => _showDetail(task.id),
               ),
             ),
         ],
@@ -106,14 +106,14 @@ class TaskListState extends State<TaskList> {
     );
   }
 
-  void _showDetail(TaskModel task) {
+  void _showDetail(String taskId) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => ChangeNotifierProvider.value(
         value: context.read<TaskProvider>(),
-        child: TaskDetailPage(task: task),
+        child: TaskDetailPage(taskId: taskId),
       ),
     );
   }
