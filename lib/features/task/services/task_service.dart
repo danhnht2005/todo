@@ -55,11 +55,11 @@ class TaskService {
   }
 
   /// Lấy chi tiết 1 task theo id
-  Future<TaskModel> getTaskById(String taskId) async {
+  Future<TaskModel> getTaskById(String id) async {
     final response = await _client
         .from('tasks')
         .select('*, steps(*)')
-        .eq('id', taskId)
+        .eq('id', id)
         .eq('user_id', _userId)
         .single();
 
