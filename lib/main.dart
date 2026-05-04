@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp.router(
-        title: 'Antigravity To-Do List',
+        title: 'To-Do',
         debugShowCheckedModeBanner: false,
 
         // BotToast

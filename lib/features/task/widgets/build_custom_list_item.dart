@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:todo/features/task_list/models/task_list_model.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
+import '../../task_list/models/task_list_model.dart';
 
 Widget buildCustomListItem({
   required BuildContext context,
