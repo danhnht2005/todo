@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'toggle_due_date.dart';
 import 'build_note_section.dart';
 import 'build_title_task_detail.dart';
 import '../../../../core/constants/app_sizes.dart';
@@ -71,6 +72,8 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
 
                     // my day
                     ToggleMyDay(task: task),
+                    // due date
+                    ToggleDueDate(task: task),
 
                     const Divider(height: 32),
 
