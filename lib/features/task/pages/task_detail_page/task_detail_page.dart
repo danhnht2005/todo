@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'build_note_section.dart';
 import 'build_title_task_detail.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../providers/task_provider.dart';
@@ -57,6 +58,9 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                     BuildTitleTaskDetail(task: provider.task!),
 
                     const SizedBox(height: AppSizes.xl),
+
+                    // Note
+                    BuildNoteTaskSection(task: provider.task!),
                   ],
                 ),
               ),
