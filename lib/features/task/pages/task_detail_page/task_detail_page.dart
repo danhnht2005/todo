@@ -43,6 +43,12 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
       ),
       body: Consumer<TaskProvider>(
         builder: (context, provider, child) {
+          if (provider.task == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final task = provider.task!;
+
           return Column(
             children: [
               Expanded(
@@ -55,12 +61,12 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                   ),
                   children: [
                     // Task Title + Checkbox
-                    BuildTitleTaskDetail(task: provider.task!),
+                    BuildTitleTaskDetail(task: task),
 
                     const SizedBox(height: AppSizes.xl),
 
                     // Note
-                    BuildNoteTaskSection(task: provider.task!),
+                    BuildNoteTaskSection(task: task),
                   ],
                 ),
               ),
