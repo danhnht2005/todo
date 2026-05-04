@@ -10,10 +10,12 @@ class TaskProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   List<TaskModel> _tasks = [];
+  TaskModel? _task;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   List<TaskModel> get tasks => _tasks;
+  TaskModel? get task => _task;
 
   // Lưu lại filter hiện tại để reload sau khi thao tác
   bool? _currentIsMyDay;
@@ -81,6 +83,19 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+  // Load task theo id
+  Future<void> loadTaskDetail(String id) async {
+    _setLoading(true);
+    _errorMessage = null;
+    try {
+      _task = await _taskService.getTaskById(id);
+    } catch (e) {
+      _errorMessage = 'Không thể tải chi tiết tác vụ: ${e.toString()}';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> _reload() async {
     try {
       if (_isLoadAll) {
@@ -93,6 +108,16 @@ class TaskProvider extends ChangeNotifier {
           listId: _currentListId,
         );
       }
+
+      // Cập nhật lại _task nếu đang xem chi tiết
+      if (_task != null) {
+        try {
+          _task = await _taskService.getTaskById(_task!.id);
+        } catch (_) {
+          _task = null; // Task có thể đã bị xóa
+        }
+      }
+
       notifyListeners();
     } catch (e) {
       _setError('Lỗi reload: ${e.toString()}');

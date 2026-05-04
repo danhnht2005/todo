@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../features/task/widgets/task_list.dart';
-import '../../../core/widgets/add_task_bar.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../features/task/providers/task_provider.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_sizes.dart';
-import '../../../core/utils/extensions.dart';
+import '../../widgets/task_list.dart';
+import '../../../../core/widgets/add_task_bar.dart';
+import '../../../../core/widgets/empty_state_widget.dart';
+import '../../providers/task_provider.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/utils/extensions.dart';
 
-/// AllTasksPage
-class AllTasksPage extends StatefulWidget {
-  const AllTasksPage({super.key});
+/// ImportantPage — Trang hiển thị task quan trọng
+class ImportantPage extends StatefulWidget {
+  const ImportantPage({super.key});
 
   @override
-  State<AllTasksPage> createState() => _AllTasksPageState();
+  State<ImportantPage> createState() => _ImportantPageState();
 }
 
-class _AllTasksPageState extends State<AllTasksPage> {
+class _ImportantPageState extends State<ImportantPage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TaskProvider>().loadTasks();
+      context.read<TaskProvider>().loadTasks(isImportant: true);
     });
   }
 
@@ -32,7 +32,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
         Column(
           children: [
             // Header
-            const _AllTasksHeader(),
+            const _ImportantHeader(),
 
             // Task List
             Expanded(
@@ -58,7 +58,8 @@ class _AllTasksPageState extends State<AllTasksPage> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => provider.loadTasks(),
+                            onPressed: () =>
+                                provider.loadTasks(isImportant: true),
                             child: const Text('Thử lại'),
                           ),
                         ],
@@ -75,10 +76,10 @@ class _AllTasksPageState extends State<AllTasksPage> {
 
                   if (incomplete.isEmpty && completed.isEmpty) {
                     return const EmptyStateWidget(
-                      icon: Icons.task_outlined,
-                      title: 'No tasks yet',
-                      subtitle: 'Press + to add a new task.',
-                      iconColor: AppColors.allTasks,
+                      icon: Icons.star_outline_rounded,
+                      title: 'Không có task quan trọng',
+                      subtitle: 'Đánh dấu ⭐ để thêm task vào đây.',
+                      iconColor: AppColors.important,
                     );
                   }
 
@@ -93,9 +94,12 @@ class _AllTasksPageState extends State<AllTasksPage> {
           bottom: 50,
           child: AddTaskBar(
             onSubmit: (title) {
-              context.read<TaskProvider>().addTask(title: title);
+              context.read<TaskProvider>().addTask(
+                title: title,
+                isImportant: true,
+              );
             },
-            accentColor: AppColors.allTasks,
+            accentColor: AppColors.important,
           ),
         ),
       ],
@@ -103,8 +107,8 @@ class _AllTasksPageState extends State<AllTasksPage> {
   }
 }
 
-class _AllTasksHeader extends StatelessWidget {
-  const _AllTasksHeader();
+class _ImportantHeader extends StatelessWidget {
+  const _ImportantHeader();
 
   @override
   Widget build(BuildContext context) {
@@ -123,17 +127,17 @@ class _AllTasksHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.allTasks.withValues(alpha: isDark ? 0.2 : 0.08),
+            AppColors.important.withValues(alpha: isDark ? 0.2 : 0.08),
             Colors.transparent,
           ],
         ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.home_rounded, color: AppColors.allTasks, size: 28),
+          const Icon(Icons.star_rounded, color: AppColors.important, size: 28),
           const SizedBox(width: AppSizes.md),
           Text(
-            'All Tasks',
+            'Quan trọng',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,

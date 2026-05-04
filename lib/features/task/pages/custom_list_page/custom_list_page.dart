@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../features/task_list/providers/task_list_provider.dart';
-import '../../../core/widgets/add_task_bar.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../../features/task/widgets/task_list.dart';
-import '../../../features/task/providers/task_provider.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_sizes.dart';
-import '../../../core/utils/extensions.dart';
+import '../../../task_list/providers/task_list_provider.dart';
+import '../../../../core/widgets/add_task_bar.dart';
+import '../../../../core/widgets/empty_state_widget.dart';
+import '../../widgets/task_list.dart';
+import '../../providers/task_provider.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/utils/extensions.dart';
 
 class CustomListPage extends StatefulWidget {
   final String id;

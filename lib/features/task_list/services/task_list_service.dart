@@ -24,11 +24,11 @@ class TaskListService {
   }
 
   /// Lấy chi tiết 1 list theo id
-  Future<TaskListModel> getListById(String listId) async {
+  Future<TaskListModel> getListById(String id) async {
     final response = await _client
         .from('task_lists')
         .select()
-        .eq('id', listId)
+        .eq('id', id)
         .eq('user_id', _userId)
         .single();
 
