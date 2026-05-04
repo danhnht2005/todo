@@ -8,9 +8,9 @@ import '../models/task_model.dart';
 
 /// TaskDetailPage — Bottom sheet chi tiết task
 class TaskDetailPage extends StatefulWidget {
-  final String taskId;
+  final String id;
 
-  const TaskDetailPage({super.key, required this.taskId});
+  const TaskDetailPage({super.key, required this.id});
 
   @override
   State<TaskDetailPage> createState() => _TaskDetailPageState();
@@ -25,13 +25,14 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<TaskProvider>().loadTaskDetail(widget.taskId);
+        context.read<TaskProvider>().loadTaskDetail(widget.id);
       }
     });
   }
 
   @override
   void dispose() {
+    context.read<TaskProvider>().clearTaskDetail();
     _titleController.dispose();
     super.dispose();
   }
