@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/features/task/providers/task_provider.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_sizes.dart';
-import '../../../../core/utils/extensions.dart';
-import '../models/task_model.dart';
+import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_sizes.dart';
+import '../../../../../core/utils/extensions.dart';
+import '../../models/task_model.dart';
 
 /// TaskDetailPage — Bottom sheet chi tiết task
 class TaskDetailPage extends StatefulWidget {
@@ -41,45 +42,25 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
 
-    return Consumer<TaskProvider>(
-      builder: (context, provider, child) {
-        if (provider.task == null) {
-          return Container(
-            height: context.screenHeight * 0.78,
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppSizes.radiusXl),
-              ),
-            ),
-            child: const Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        return Container(
-          height: context.screenHeight * 0.78,
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppSizes.radiusXl),
-            ),
-          ),
-          child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+      ),
+      body: Consumer<TaskProvider>(
+        builder: (context, provider, child) {
+          return Column(
             children: [
-              // Handle bar
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.dividerDark : AppColors.divider,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.all(AppSizes.xxl),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSizes.xxl,
+                    AppSizes.xs,
+                    AppSizes.xxl,
+                    AppSizes.xs,
+                  ),
                   children: [
                     // Task Title + Checkbox
                     _buildTitleRow(isDark, provider.task!),
@@ -89,9 +70,9 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                 ),
               ),
             ],
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -105,34 +86,20 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
 
   Widget _buildTitleRow(bool isDark, TaskModel task) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Checkbox
-        GestureDetector(
-          onTap: () {
+        IconButton(
+          icon: Icon(
+            task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
+            color: task.isCompleted ? AppColors.checkGreen : Colors.grey,
+          ),
+          onPressed: () {
             context.read<TaskProvider>().toggleComplete(
               taskId: task.id,
               isCompleted: !task.isCompleted,
             );
           },
-          child: Container(
-            width: 24,
-            height: 24,
-            margin: const EdgeInsets.only(top: 2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: task.isCompleted ? AppColors.primary : Colors.transparent,
-              border: Border.all(
-                color: task.isCompleted
-                    ? AppColors.primary
-                    : AppColors.textHint,
-                width: 1.5,
-              ),
-            ),
-            child: task.isCompleted
-                ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
-                : null,
-          ),
         ),
         const SizedBox(width: AppSizes.md),
         // Title — tap to edit
@@ -180,18 +147,17 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                 ),
         ),
         // Star
-        GestureDetector(
-          onTap: () {
+        IconButton(
+          icon: Icon(
+            task.isImportant ? Icons.star : Icons.star_border,
+            color: task.isImportant ? AppColors.starYellow : AppColors.textHint,
+          ),
+          onPressed: () {
             context.read<TaskProvider>().toggleImportant(
               taskId: task.id,
               isImportant: !task.isImportant,
             );
           },
-          child: Icon(
-            task.isImportant ? Icons.star_rounded : Icons.star_outline_rounded,
-            color: task.isImportant ? AppColors.starYellow : AppColors.textHint,
-            size: 24,
-          ),
         ),
       ],
     );
