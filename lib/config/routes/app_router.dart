@@ -2,13 +2,13 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo/features/task/pages/task_detail_page/task_detail_page.dart';
-import '../../features/task/pages/custom_list_page.dart';
-import '../../features/task/pages/all_tasks_page.dart';
-import '../../features/task/pages/planned_page.dart';
-import '../../features/task/pages/important_page.dart';
+import '../../features/task/pages/custom_list_page/custom_list_page.dart';
+import '../../features/task/pages/all_tasks_page/all_tasks_page.dart';
+import '../../features/task/pages/planned_page/planned_page.dart';
+import '../../features/task/pages/important_page/important_page.dart';
 import '../../features/auth/pages/register_page.dart';
 import '../../features/auth/pages/login_page.dart';
-import '../../features/task/pages/my_day_page.dart';
+import '../../features/task/pages/my_day_page/my_day_page.dart';
 import '../../features/task/widgets/main_layout.dart';
 
 /// AppRouter — Cấu hình GoRouter

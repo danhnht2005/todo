@@ -96,11 +96,6 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  // Xóa task detail khi đóng bottom sheet
-  void clearTaskDetail() {
-    _task = null;
-  }
-
   Future<void> _reload() async {
     try {
       if (_isLoadAll) {
