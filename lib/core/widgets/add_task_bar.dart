@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_sizes.dart';
 import '../utils/extensions.dart';
@@ -32,7 +33,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
     if (_controller.text.trim().isNotEmpty) {
       widget.onSubmit(_controller.text.trim());
       _controller.clear();
-      // Keep focus if needed, or unfocus
+      context.pop();
     }
   }
 

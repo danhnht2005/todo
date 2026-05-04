@@ -54,6 +54,18 @@ class TaskService {
         .toList();
   }
 
+  /// Lấy chi tiết 1 task theo id
+  Future<TaskModel> getTaskById(String taskId) async {
+    final response = await _client
+        .from('tasks')
+        .select('*, steps(*)')
+        .eq('id', taskId)
+        .eq('user_id', _userId)
+        .single();
+
+    return TaskModel.fromJson(response);
+  }
+
   /// Tạo task mới
   Future<TaskModel> createTask({
     required String title,
