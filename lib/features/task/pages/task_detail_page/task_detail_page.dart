@@ -5,6 +5,7 @@ import 'build_note_section.dart';
 import 'build_title_task_detail.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../providers/task_provider.dart';
+import 'toggle_my_day.dart';
 
 /// TaskDetailPage — Bottom sheet chi tiết task
 class TaskDetailPage extends StatefulWidget {
@@ -64,6 +65,14 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                     BuildTitleTaskDetail(task: task),
 
                     const SizedBox(height: AppSizes.xl),
+
+                    //step
+                    const SizedBox(height: AppSizes.md),
+
+                    // my day
+                    ToggleMyDay(task: task),
+
+                    const Divider(height: 32),
 
                     // Note
                     BuildNoteTaskSection(task: task),
