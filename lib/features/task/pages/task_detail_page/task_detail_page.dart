@@ -94,8 +94,6 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                 ),
               ),
 
-              const Spacer(),
-
               //Footer
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
