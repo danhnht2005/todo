@@ -1,57 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:todo/core/constants/app_colors.dart';
-import 'package:todo/core/utils/extensions.dart';
-import 'package:todo/features/task/providers/task_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/core/widgets/task_tile.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/utils/extensions.dart';
+import '../../providers/task_provider.dart';
 
-class TaskSearchDelegate extends SearchDelegate<String> {
-  final TaskProvider taskProvider;
-
-  TaskSearchDelegate({required this.taskProvider});
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
 
   @override
-  String get searchFieldLabel => 'Tìm kiếm công việc...';
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  final _searchController = TextEditingController();
+  final _focusNode = FocusNode();
+  String _query = '';
 
   @override
-  ThemeData appBarTheme(BuildContext context) {
-    final theme = Theme.of(context);
-    return theme.copyWith(
-      inputDecorationTheme: const InputDecorationTheme(
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-      ),
-    );
+  void initState() {
+    super.initState();
+    _focusNode.requestFocus();
   }
 
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      if (query.isNotEmpty)
-        IconButton(
-          onPressed: () => query = '',
-          icon: const Icon(Icons.clear_rounded),
-        ),
-    ];
+  void dispose() {
+    _searchController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() => _query = value.trim());
+    if (_query.isNotEmpty) {
+      context.read<TaskProvider>().searchTasks(_query);
+    }
   }
 
   @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () => close(context, ''),
-      icon: const Icon(Icons.arrow_back_rounded),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) => _buildSearchResults(context);
-
-  @override
-  Widget buildSuggestions(BuildContext context) => _buildSearchResults(context);
-
-  Widget _buildSearchResults(BuildContext context) {
+  Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
 
-    if (query.isEmpty) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+        titleSpacing: 0,
+        title: TextField(
+          controller: _searchController,
+          focusNode: _focusNode,
+          onChanged: _onSearchChanged,
+          style: TextStyle(
+            fontSize: 16,
+            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+          ),
+          decoration: InputDecoration(
+            hintText: 'Tìm kiếm công việc...',
+            hintStyle: TextStyle(
+              color: isDark ? AppColors.textSecondaryDark : AppColors.textHint,
+            ),
+            filled: false,
+            fillColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            focusColor: Colors.transparent,
+
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        actions: [
+          if (_query.isNotEmpty)
+            IconButton(
+              onPressed: () {
+                _searchController.clear();
+                setState(() => _query = '');
+              },
+              icon: const Icon(Icons.clear_rounded),
+            ),
+        ],
+      ),
+      body: _buildBody(isDark),
+    );
+  }
+
+  Widget _buildBody(bool isDark) {
+    if (_query.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -61,7 +102,7 @@ class TaskSearchDelegate extends SearchDelegate<String> {
               size: 48,
               color: isDark ? AppColors.textSecondaryDark : AppColors.textHint,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSizes.md),
             Text(
               'Nhập để tìm kiếm công việc',
               style: TextStyle(
@@ -76,22 +117,20 @@ class TaskSearchDelegate extends SearchDelegate<String> {
       );
     }
 
-    // Tìm kiếm qua Supabase
-    return FutureBuilder(
-      future: taskProvider.searchTasks(query).then((_) => taskProvider.tasks),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer<TaskProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final results = taskProvider.tasks
-            .where((t) => t.title.toLowerCase().contains(query.toLowerCase()))
+        final results = provider.tasks
+            .where((t) => t.title.toLowerCase().contains(_query.toLowerCase()))
             .toList();
 
         if (results.isEmpty) {
           return Center(
             child: Text(
-              'Không tìm thấy kết quả cho "$query"',
+              'Không tìm thấy kết quả cho "$_query"',
               style: TextStyle(
                 fontSize: 15,
                 color: isDark
@@ -104,66 +143,13 @@ class TaskSearchDelegate extends SearchDelegate<String> {
 
         return ListView.builder(
           itemCount: results.length,
-          itemBuilder: (context, index) {
-            final task = results[index];
-            return ListTile(
-              leading: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: task.isCompleted
-                      ? AppColors.primary
-                      : Colors.transparent,
-                  border: Border.all(
-                    color: task.isCompleted
-                        ? AppColors.primary
-                        : AppColors.textHint,
-                    width: 1.5,
-                  ),
-                ),
-                child: task.isCompleted
-                    ? const Icon(
-                        Icons.check_rounded,
-                        size: 14,
-                        color: Colors.white,
-                      )
-                    : null,
-              ),
-              title: Text(
-                task.title,
-                style: TextStyle(
-                  decoration: task.isCompleted
-                      ? TextDecoration.lineThrough
-                      : null,
-                  color: task.isCompleted
-                      ? AppColors.textHint
-                      : (isDark
-                            ? AppColors.textPrimaryDark
-                            : AppColors.textPrimary),
-                ),
-              ),
-              subtitle: task.dueDate != null
-                  ? Text(
-                      'Hạn: ${task.dueDate!.day}/${task.dueDate!.month}/${task.dueDate!.year}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: task.dueDate!.isOverdue
-                            ? AppColors.error
-                            : AppColors.textHint,
-                      ),
-                    )
-                  : null,
-              trailing: task.isImportant
-                  ? const Icon(
-                      Icons.star_rounded,
-                      color: AppColors.starYellow,
-                      size: 20,
-                    )
-                  : null,
-              onTap: () {},
-            );
-          },
+          itemBuilder: (context, index) => TaskTile(
+            task: results[index],
+            onToggle: () => context.push('/task/${results[index].id}'),
+            onToggleImportant: () => context.push('/task/${results[index].id}'),
+            onDelete: () => context.push('/task/${results[index].id}'),
+            onTap: () => context.push('/task/${results[index].id}'),
+          ),
         );
       },
     );
