@@ -24,57 +24,55 @@ class _ToggleMyDayState extends State<ToggleMyDay> {
         ? AppColors.primary
         : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondary);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            context.read<TaskProvider>().toggleMyDay(
-              taskId: task.id,
-              isMyDay: !task.isMyDay,
-            );
-          },
-          onLongPress: isActive
-              ? () {
-                  context.read<TaskProvider>().toggleMyDay(
-                    taskId: task.id,
-                    isMyDay: false,
-                  );
-                }
-              : null,
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.sm,
-              vertical: AppSizes.md,
-            ),
-            child: Row(
-              children: [
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          context.read<TaskProvider>().toggleMyDay(
+            taskId: task.id,
+            isMyDay: !task.isMyDay,
+          );
+        },
+        onLongPress: isActive
+            ? () {
+                context.read<TaskProvider>().toggleMyDay(
+                  taskId: task.id,
+                  isMyDay: false,
+                );
+              }
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.md,
+            vertical: AppSizes.md,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isActive ? Icons.wb_sunny : Icons.wb_sunny_outlined,
+                color: color,
+                size: 22,
+              ),
+              const SizedBox(width: AppSizes.lg),
+              Expanded(
+                child: Text(
+                  isActive
+                      ? 'Đã thêm vào Ngày của tôi'
+                      : 'Thêm vào Ngày của tôi',
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    color: color,
+                    fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
+                  ),
+                ),
+              ),
+              if (isActive)
                 Icon(
-                  isActive ? Icons.wb_sunny : Icons.wb_sunny_outlined,
-                  color: color,
-                  size: 22,
+                  Icons.close_rounded,
+                  color: color.withValues(alpha: 0.5),
+                  size: 16,
                 ),
-                const SizedBox(width: AppSizes.lg),
-                Expanded(
-                  child: Text(
-                    isActive ? 'Đã thêm vào Ngày của tôi' : 'Thêm vào Ngày của tôi',
-                    style: TextStyle(
-                      fontSize: 14.5,
-                      color: color,
-                      fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
-                    ),
-                  ),
-                ),
-                if (isActive)
-                  Icon(
-                    Icons.close_rounded,
-                    color: color.withValues(alpha: 0.5),
-                    size: 16,
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),

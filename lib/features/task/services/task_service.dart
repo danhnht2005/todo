@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/step_model.dart';
 import '../models/task_model.dart';
 
 /// TaskService — CRUD tasks
@@ -148,5 +149,42 @@ class TaskService {
     return (response as List)
         .map((json) => TaskModel.fromJson(json as Map<String, dynamic>))
         .toList();
+  }
+
+  // ═══════════════════════════════════════════
+  // STEPS
+  // ═══════════════════════════════════════════
+
+  /// Thêm step vào task
+  Future<void> addStep({
+    required String taskId,
+    required String title,
+    int sortOrder = 0,
+  }) async {
+    await _client
+        .from('steps')
+        .insert(
+          StepModel.toInsertJson(
+            taskId: taskId,
+            title: title,
+            sortOrder: sortOrder,
+          ),
+        );
+  }
+
+  /// Toggle step hoàn thành
+  Future<void> toggleStep({
+    required String stepId,
+    required bool isCompleted,
+  }) async {
+    await _client
+        .from('steps')
+        .update({'is_completed': isCompleted})
+        .eq('id', stepId);
+  }
+
+  /// Xóa step
+  Future<void> deleteStep(String stepId) async {
+    await _client.from('steps').delete().eq('id', stepId);
   }
 }

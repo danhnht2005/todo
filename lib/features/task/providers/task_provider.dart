@@ -225,6 +225,36 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> addStep({required String taskId, required String title}) async {
+    try {
+      await _taskService.addStep(taskId: taskId, title: title);
+      await _reload();
+    } catch (e) {
+      _setError('Không thể thêm bước: ${e.toString()}');
+    }
+  }
+
+  Future<void> toggleStep({
+    required String stepId,
+    required bool isCompleted,
+  }) async {
+    try {
+      await _taskService.toggleStep(stepId: stepId, isCompleted: isCompleted);
+      await _reload();
+    } catch (e) {
+      _setError('Lỗi: ${e.toString()}');
+    }
+  }
+
+  Future<void> deleteStep(String stepId) async {
+    try {
+      await _taskService.deleteStep(stepId);
+      await _reload();
+    } catch (e) {
+      _setError('Lỗi: ${e.toString()}');
+    }
+  }
+
   Future<void> searchTasks(String query) async {
     _setLoading(true);
     try {

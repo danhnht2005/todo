@@ -17,6 +17,7 @@ class AppSizes {
   static const double radiusXl = 24.0;
 
   static const double iconMd = 24.0;
+  static const double iconXl = 32.0;
 
   static double sidebarWidth(BuildContext context) {
     return MediaQuery.sizeOf(context).width * 0.75;
