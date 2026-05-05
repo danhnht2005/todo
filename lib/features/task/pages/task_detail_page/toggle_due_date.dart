@@ -62,49 +62,45 @@ class _ToggleDueDateState extends State<ToggleDueDate> {
         ? AppColors.primary
         : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondary);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _pickDueDate,
-          onLongPress: isActive ? _clearDueDate : null,
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.sm,
-              vertical: AppSizes.md,
-            ),
-            child: Row(
-              children: [
-                Icon(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _pickDueDate,
+        onLongPress: isActive ? _clearDueDate : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.md,
+            vertical: AppSizes.md,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isActive
+                    ? Icons.calendar_today
+                    : Icons.calendar_today_outlined,
+                color: color,
+                size: 22,
+              ),
+              const SizedBox(width: AppSizes.lg),
+              Expanded(
+                child: Text(
                   isActive
-                      ? Icons.calendar_today
-                      : Icons.calendar_today_outlined,
-                  color: color,
-                  size: 22,
-                ),
-                const SizedBox(width: AppSizes.lg),
-                Expanded(
-                  child: Text(
-                    isActive
-                        ? 'Đến hạn ${_formatDueDate(task.dueDate!)}'
-                        : 'Thêm ngày đến hạn',
-                    style: TextStyle(
-                      fontSize: 14.5,
-                      color: color,
-                      fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
-                    ),
+                      ? 'Đến hạn ${_formatDueDate(task.dueDate!)}'
+                      : 'Thêm ngày đến hạn',
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    color: color,
+                    fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
                   ),
                 ),
-                if (isActive)
-                  Icon(
-                    Icons.close_rounded,
-                    color: color.withValues(alpha: 0.5),
-                    size: 16,
-                  ),
-              ],
-            ),
+              ),
+              if (isActive)
+                Icon(
+                  Icons.close_rounded,
+                  color: color.withValues(alpha: 0.5),
+                  size: 16,
+                ),
+            ],
           ),
         ),
       ),

@@ -37,13 +37,18 @@ class _BuildAddStepInputState extends State<BuildAddStepInput> {
     final isDark = context.isDarkMode;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
       child: Row(
         children: [
           Container(
-            width: 18, height: 18,
+            width: 18,
+            height: 18,
             margin: const EdgeInsets.only(left: AppSizes.sm),
-            child: const Icon(Icons.add_rounded, size: 18, color: AppColors.primary),
+            child: const Icon(
+              Icons.add_rounded,
+              size: 18,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(width: AppSizes.md),
           Expanded(
@@ -52,16 +57,26 @@ class _BuildAddStepInputState extends State<BuildAddStepInput> {
               focusNode: _stepFocusNode,
               onSubmitted: (value) {
                 if (value.trim().isNotEmpty) {
-                  context.read<TaskProvider>().addStep(taskId: widget.task.id, title: value.trim());
+                  context.read<TaskProvider>().addStep(
+                    taskId: widget.task.id,
+                    title: value.trim(),
+                  );
                   _stepController.clear();
                   _stepFocusNode.requestFocus();
                 }
               },
-              style: TextStyle(fontSize: 14,
-                  color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary),
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimary,
+              ),
               decoration: InputDecoration(
                 hintText: 'Thêm bước...',
-                hintStyle: TextStyle(color: AppColors.primary.withValues(alpha: 0.5), fontSize: 14),
+                hintStyle: TextStyle(
+                  color: AppColors.primary.withValues(alpha: 0.5),
+                  fontSize: 14,
+                ),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,

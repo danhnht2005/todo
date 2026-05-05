@@ -43,7 +43,8 @@ class _BuildTitleTaskDetailState extends State<BuildTitleTaskDetail> {
         IconButton(
           icon: Icon(
             task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
-            color: task.isCompleted ? AppColors.checkGreen : Colors.grey,
+            color: task.isCompleted ? AppColors.primary : Colors.grey,
+            size: AppSizes.iconXl,
           ),
           onPressed: () {
             context.read<TaskProvider>().toggleComplete(

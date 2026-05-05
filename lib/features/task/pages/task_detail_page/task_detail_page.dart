@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'task_detail_footer.dart';
 import 'build_app_step_input.dart';
 import 'build_step_list.dart';
 import 'toggle_due_date.dart';
 import 'build_note_section.dart';
 import 'build_title_task_detail.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/utils/extensions.dart';
 import '../../providers/task_provider.dart';
 import 'toggle_my_day.dart';
 
@@ -57,39 +60,66 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
             children: [
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSizes.xxl,
-                    AppSizes.xs,
-                    AppSizes.xxl,
-                    AppSizes.xs,
-                  ),
                   children: [
                     // Task Title + Checkbox
                     BuildTitleTaskDetail(task: task),
 
-                    const SizedBox(height: AppSizes.xl),
+                    const SizedBox(height: AppSizes.xs),
 
                     // Steps
                     BuildStepList(task: task),
                     BuildAddStepInput(task: task),
-                    const SizedBox(height: AppSizes.md),
 
-                    // my day
-                    ToggleMyDay(task: task),
-                    // due date
-                    ToggleDueDate(task: task),
+                    const SizedBox(height: AppSizes.sm),
 
-                    const Divider(height: 32),
+                    _buildSectionCard(
+                      context: context,
+                      children: [
+                        ToggleMyDay(task: task),
+                        const Divider(height: 1, indent: 56, endIndent: 16),
+                        ToggleDueDate(task: task),
+                      ],
+                    ),
+
+                    const SizedBox(height: AppSizes.sm),
 
                     // Note
-                    BuildNoteTaskSection(task: task),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSizes.md,
+                      ),
+                      child: BuildNoteTaskSection(task: task),
+                    ),
                   ],
                 ),
+              ),
+
+              const Spacer(),
+
+              //Footer
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                child: TaskDetailFooter(task: task),
               ),
             ],
           );
         },
       ),
+    );
+  }
+
+  Widget _buildSectionCard({
+    required BuildContext context,
+    required List<Widget> children,
+  }) {
+    final isDark = context.isDarkMode;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceDark : AppColors.sidebarLight,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      ),
+      child: Column(mainAxisSize: MainAxisSize.min, children: children),
     );
   }
 }
