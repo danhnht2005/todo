@@ -114,7 +114,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSizes.md),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.sidebarLight,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
       child: Column(mainAxisSize: MainAxisSize.min, children: children),
