@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:todo/core/constants/app_sizes.dart';
 import 'package:todo/features/task/widgets/sidebar_widget.dart';
 import '../.././../core/constants/app_colors.dart';
@@ -34,8 +35,7 @@ class MainLayout extends StatelessWidget {
         actions: [
           // Search button
           IconButton(
-            // onPressed: _showSearchDialog,
-            onPressed: () => {},
+            onPressed: () => {context.push('/search')},
             icon: Icon(
               Icons.search_rounded,
               color: isDark
