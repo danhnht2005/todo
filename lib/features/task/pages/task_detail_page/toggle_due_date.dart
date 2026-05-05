@@ -97,6 +97,12 @@ class _ToggleDueDateState extends State<ToggleDueDate> {
                     ),
                   ),
                 ),
+                if (isActive)
+                  Icon(
+                    Icons.close_rounded,
+                    color: color.withValues(alpha: 0.5),
+                    size: 16,
+                  ),
               ],
             ),
           ),
