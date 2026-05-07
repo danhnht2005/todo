@@ -18,7 +18,7 @@ class AppRouter {
     //BotToast observer
     observers: [BotToastNavigatorObserver()],
 
-    initialLocation: '/home',
+    initialLocation: '/my-day',
     redirect: (context, state) {
       final isAuthenticated = Supabase.instance.client.auth.currentUser != null;
       final isAuthRoute =
@@ -44,7 +44,7 @@ class AppRouter {
         },
         routes: [
           GoRoute(
-            path: '/home',
+            path: '/my-day',
             builder: (context, state) => const MyDayPage(),
           ),
           GoRoute(
