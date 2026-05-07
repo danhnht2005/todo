@@ -18,7 +18,7 @@ class AppRouter {
     //BotToast observer
     observers: [BotToastNavigatorObserver()],
 
-    initialLocation: '/my-day',
+    initialLocation: '/',
     redirect: (context, state) {
       final isAuthenticated = Supabase.instance.client.auth.currentUser != null;
       final isAuthRoute =
@@ -32,7 +32,7 @@ class AppRouter {
 
       // Đã đăng nhập mà vào trang auth → về home
       if (isAuthenticated && isAuthRoute) {
-        return '/my-day';
+        return '/';
       }
 
       return null; // Không redirect
@@ -43,10 +43,7 @@ class AppRouter {
           return MainLayout(child: child);
         },
         routes: [
-          GoRoute(
-            path: '/my-day',
-            builder: (context, state) => const MyDayPage(),
-          ),
+          GoRoute(path: '/', builder: (context, state) => const MyDayPage()),
           GoRoute(
             path: '/important',
             builder: (context, state) => const ImportantPage(),
