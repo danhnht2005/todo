@@ -51,10 +51,17 @@ class _SidebarWidgetState extends State<SidebarWidget> {
                 children: [
                   buildSmartListItem(
                     context: context,
+                    icon: Icons.dashboard_rounded,
+                    title: 'Tổng quan',
+                    color: AppColors.primary,
+                    routeName: 'dashboard',
+                  ),
+                  buildSmartListItem(
+                    context: context,
                     icon: Icons.wb_sunny_rounded,
                     title: 'My Day',
                     color: AppColors.myDay,
-                    routeName: 'home',
+                    routeName: 'my-day',
                   ),
                   buildSmartListItem(
                     context: context,

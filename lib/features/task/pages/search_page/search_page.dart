@@ -143,13 +143,23 @@ class _SearchPageState extends State<SearchPage> {
 
         return ListView.builder(
           itemCount: results.length,
-          itemBuilder: (context, index) => TaskTile(
-            task: results[index],
-            onToggle: () => context.push('/task/${results[index].id}'),
-            onToggleImportant: () => context.push('/task/${results[index].id}'),
-            onDelete: () => context.push('/task/${results[index].id}'),
-            onTap: () => context.push('/task/${results[index].id}'),
-          ),
+          itemBuilder: (context, index) {
+            final task = results[index];
+            return TaskTile(
+              task: task,
+              onToggle: () => context.read<TaskProvider>().toggleComplete(
+                    taskId: task.id,
+                    isCompleted: !task.isCompleted,
+                  ),
+              onToggleImportant: () =>
+                  context.read<TaskProvider>().toggleImportant(
+                        taskId: task.id,
+                        isImportant: !task.isImportant,
+                      ),
+              onDelete: () => context.read<TaskProvider>().deleteTask(task.id),
+              onTap: () => context.push('/task/${task.id}'),
+            );
+          },
         );
       },
     );
