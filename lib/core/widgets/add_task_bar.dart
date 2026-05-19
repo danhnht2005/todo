@@ -98,12 +98,20 @@ class _AddTaskBarState extends State<AddTaskBar> {
                       onTap: () {}, // Xóa setState không dùng
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_upward_rounded,
-                      color: widget.accentColor,
-                    ),
-                    onPressed: _handleSubimit,
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _controller,
+                    builder: (context, value, child) {
+                      final isNotEmpty = value.text.trim().isNotEmpty;
+                      return IconButton(
+                        icon: Icon(
+                          Icons.arrow_upward_rounded,
+                          color: isNotEmpty
+                              ? widget.accentColor
+                              : Colors.grey.withValues(alpha: 0.5),
+                        ),
+                        onPressed: isNotEmpty ? _handleSubimit : null,
+                      );
+                    },
                   ),
                 ],
               ),

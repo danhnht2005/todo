@@ -102,8 +102,11 @@ class _RegisterPageState extends State<RegisterPage>
                 TextFormField(
                   controller: _nameController,
                   validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Vui lòng nhập tên';
+                    if (val == null || val.trim().isEmpty) {
+                      return 'Nhập họ tên';
+                    }
+                    if (val.trim().length < 2) {
+                      return 'Họ tên tối thiểu 2 ký tự';
                     }
                     return null;
                   },
@@ -121,10 +124,13 @@ class _RegisterPageState extends State<RegisterPage>
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Vui lòng nhập email';
+                    if (val == null || val.trim().isEmpty) {
+                      return 'Nhập email';
                     }
-                    if (!val.contains('@')) return 'Email không hợp lệ';
+                    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    if (!emailRegex.hasMatch(val.trim())) {
+                      return 'Email không hợp lệ';
+                    }
                     return null;
                   },
                   decoration: const InputDecoration(
@@ -142,7 +148,7 @@ class _RegisterPageState extends State<RegisterPage>
                   obscureText: _obscurePassword,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu';
+                      return 'Nhập mật khẩu';
                     }
                     if (val.length < 6) return 'Mật khẩu tối thiểu 6 ký tự';
                     return null;
@@ -174,8 +180,11 @@ class _RegisterPageState extends State<RegisterPage>
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirm,
                   validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Nhập lại mật khẩu';
+                    }
                     if (val != _passwordController.text) {
-                      return 'Mật khẩu xác nhận không khớp';
+                      return 'Mật khẩu không khớp';
                     }
                     return null;
                   },
