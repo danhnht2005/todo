@@ -89,16 +89,22 @@ void _showCreateListDialog(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                context.read<TaskListProvider>().createTaskList(
-                  title: controller.text.trim(),
-                );
-                Navigator.pop(ctx);
+              final title = controller.text.trim();
+              if (title.isEmpty) {
                 BotToast.showText(
-                  text: 'Đã tạo danh sách: ${controller.text.trim()}',
+                  text: 'Tiêu đề danh sách không được để trống',
                   align: const Alignment(0, 0.8),
                 );
+                return;
               }
+              context.read<TaskListProvider>().createTaskList(
+                title: title,
+              );
+              Navigator.pop(ctx);
+              BotToast.showText(
+                text: 'Đã tạo danh sách: $title',
+                align: const Alignment(0, 0.8),
+              );
             },
             child: const Text(
               'Tạo danh sách',

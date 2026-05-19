@@ -10,7 +10,7 @@ class AppTheme {
         seedColor: AppColors.primary,
         brightness: Brightness.light,
       ),
-      textTheme: GoogleFonts.outfitTextTheme(),
+      textTheme: GoogleFonts.beVietnamProTextTheme(),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -55,7 +55,7 @@ class AppTheme {
         brightness: Brightness.dark,
         surface: const Color(0xFF121212),
       ),
-      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),
+      textTheme: GoogleFonts.beVietnamProTextTheme(ThemeData.dark().textTheme),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,

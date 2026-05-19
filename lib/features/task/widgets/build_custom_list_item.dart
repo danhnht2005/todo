@@ -10,9 +10,13 @@ Widget buildCustomListItem({
   required TaskListModel list,
 }) {
   final isDark = context.isDarkMode;
+  
+  final GoRouterState routerState = GoRouterState.of(context);
+  final String currentPath = routerState.uri.path;
+  final bool isSelected = currentPath == '/custom-list/${list.id}';
 
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
     child: Material(
       color: Colors.transparent,
       child: InkWell(
@@ -22,24 +26,34 @@ Widget buildCustomListItem({
         },
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.md,
-            vertical: AppSizes.md,
+            vertical: 12,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected 
+                ? AppColors.customList.withValues(alpha: isDark ? 0.15 : 0.08)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           child: Row(
             children: [
-              Icon(Icons.list, color: AppColors.customList),
+              Icon(
+                Icons.list_rounded, 
+                color: isSelected ? AppColors.customList : (isDark ? Colors.white70 : Colors.black54),
+                size: AppSizes.iconMd,
+              ),
               const SizedBox(width: AppSizes.md),
               Expanded(
                 child: Text(
                   list.title,
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: isDark
-                        ? AppColors.textPrimaryDark
-                        : AppColors.textPrimary,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected 
+                        ? (isDark ? Colors.white : AppColors.customList) 
+                        : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimary),
                   ),
                 ),
               ),

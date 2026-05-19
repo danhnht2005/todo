@@ -12,40 +12,51 @@ Widget buildSmartListItem({
   required String routeName,
 }) {
   final isDark = context.isDarkMode;
+  
+  final GoRouterState routerState = GoRouterState.of(context);
+  final String currentPath = routerState.uri.path;
+  final bool isSelected = (currentPath == '/' && routeName == 'dashboard') || 
+                           currentPath == '/$routeName';
 
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
     child: Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
           Navigator.pop(context);
-          context.go('/$routeName');
+          context.go(routeName == 'dashboard' ? '/' : '/$routeName');
         },
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSizes.md,
-            vertical: AppSizes.md,
+            vertical: 12,
           ),
           decoration: BoxDecoration(
-            color: Colors.transparent,
+            color: isSelected 
+                ? color.withValues(alpha: isDark ? 0.15 : 0.08)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           ),
           child: Row(
             children: [
-              Icon(icon, color: color, size: AppSizes.iconMd),
+              Icon(
+                icon, 
+                color: isSelected ? color : (isDark ? Colors.white70 : Colors.black54), 
+                size: AppSizes.iconMd,
+              ),
               const SizedBox(width: AppSizes.md),
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: isDark
-                        ? AppColors.textPrimaryDark
-                        : AppColors.textPrimary,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected 
+                        ? (isDark ? Colors.white : color) 
+                        : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimary),
                   ),
                 ),
               ),

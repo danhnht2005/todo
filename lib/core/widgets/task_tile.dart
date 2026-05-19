@@ -36,77 +36,96 @@ class TaskTile extends StatelessWidget {
       onDismissed: (_) => onDelete(),
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSizes.sm,
-          vertical: 2,
+          horizontal: AppSizes.md,
+          vertical: 4,
         ),
-        child: Material(
-          color: isDark ? AppColors.surfaceDark : Colors.white,
-          borderRadius: BorderRadius.circular(AppSizes.sm),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(AppSizes.sm),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.md,
-                vertical: AppSizes.sm,
-              ),
-              child: Row(
-                children: [
-                  // Checkbox
-                  IconButton(
-                    icon: Icon(
-                      task.isCompleted
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
-                      color: task.isCompleted
-                          ? AppColors.checkGreen
-                          : Colors.grey,
+        child: Container(
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.surfaceDark : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.black.withValues(alpha: 0.05),
+              width: 1,
+            ),
+            boxShadow: isDark
+                ? []
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                    onPressed: onToggle,
-                  ),
-                  const SizedBox(width: AppSizes.xs),
-                  // Task Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          task.title,
-                          style: TextStyle(
-                            fontSize: 16,
-                            decoration: task.isCompleted
-                                ? TextDecoration.lineThrough
-                                : null,
-                            color: task.isCompleted
-                                ? AppColors.textHint
-                                : (isDark
-                                      ? AppColors.textPrimaryDark
-                                      : AppColors.textPrimary),
-                          ),
-                        ),
-                        if (task.totalStepCount > 0)
+                  ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.md,
+                  vertical: 6,
+                ),
+                child: Row(
+                  children: [
+                    // Checkbox
+                    IconButton(
+                      icon: Icon(
+                        task.isCompleted
+                            ? Icons.check_circle
+                            : Icons.circle_outlined,
+                        color: task.isCompleted
+                            ? AppColors.checkGreen
+                            : Colors.grey,
+                      ),
+                      onPressed: onToggle,
+                    ),
+                    const SizedBox(width: AppSizes.xs),
+                    // Task Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            '${task.completedStepCount} của ${task.totalStepCount}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textHint,
+                            task.title,
+                            style: TextStyle(
+                              fontSize: 16,
+                              decoration: task.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: task.isCompleted
+                                  ? AppColors.textHint
+                                  : (isDark
+                                        ? AppColors.textPrimaryDark
+                                        : AppColors.textPrimary),
                             ),
                           ),
-                      ],
+                          if (task.totalStepCount > 0)
+                            Text(
+                              '${task.completedStepCount} của ${task.totalStepCount}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textHint,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                  // Important Star
-                  IconButton(
-                    icon: Icon(
-                      task.isImportant ? Icons.star : Icons.star_border,
-                      color: task.isImportant
-                          ? AppColors.starYellow
-                          : AppColors.textHint,
+                    // Important Star
+                    IconButton(
+                      icon: Icon(
+                        task.isImportant ? Icons.star : Icons.star_border,
+                        color: task.isImportant
+                            ? AppColors.starYellow
+                            : AppColors.textHint,
+                      ),
+                      onPressed: onToggleImportant,
                     ),
-                    onPressed: onToggleImportant,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

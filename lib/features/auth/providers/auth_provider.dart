@@ -138,10 +138,16 @@ class AuthProvider extends ChangeNotifier {
 
   String _mapAuthError(String message) {
     if (message.contains('Invalid login credentials')) {
-      return 'Email hoặc mật khẩu không đúng';
+      return 'Sai email hoặc mật khẩu';
     }
-    if (message.contains('User already registered')) {
+    if (message.contains('User already registered') || message.contains('already exists')) {
       return 'Email đã được đăng ký';
+    }
+    if (message.contains('Password should be')) {
+      return 'Mật khẩu tối thiểu 6 ký tự';
+    }
+    if (message.contains('invalid email')) {
+      return 'Email không hợp lệ';
     }
     return message;
   }

@@ -23,6 +23,7 @@ class TaskProvider extends ChangeNotifier {
   bool? _currentHasDueDate;
   String? _currentListId;
   bool _isLoadAll = false;
+  String? _currentSearchQuery;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -48,6 +49,7 @@ class TaskProvider extends ChangeNotifier {
     _currentHasDueDate = hasDueDate;
     _currentListId = listId;
     _isLoadAll = false;
+    _currentSearchQuery = null;
 
     try {
       _tasks = await _taskService.getTasksFiltered(
@@ -73,6 +75,7 @@ class TaskProvider extends ChangeNotifier {
     _currentIsImportant = null;
     _currentHasDueDate = null;
     _currentListId = null;
+    _currentSearchQuery = null;
 
     try {
       _tasks = await _taskService.getTasks();
@@ -98,7 +101,9 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> _reload() async {
     try {
-      if (_isLoadAll) {
+      if (_currentSearchQuery != null) {
+        _tasks = await _taskService.searchTasks(_currentSearchQuery!);
+      } else if (_isLoadAll) {
         _tasks = await _taskService.getTasks();
       } else {
         _tasks = await _taskService.getTasksFiltered(
@@ -257,6 +262,12 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> searchTasks(String query) async {
     _setLoading(true);
+    _isLoadAll = false;
+    _currentIsMyDay = null;
+    _currentIsImportant = null;
+    _currentHasDueDate = null;
+    _currentListId = null;
+    _currentSearchQuery = query;
     try {
       _tasks = await _taskService.searchTasks(query);
       _errorMessage = null;
