@@ -96,10 +96,15 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Vui lòng nhập email';
+                    if (val == null || val.trim().isEmpty) {
+                      return 'Nhập email';
                     }
-                    if (!val.contains('@')) return 'Email không hợp lệ';
+                    final emailRegex = RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    );
+                    if (!emailRegex.hasMatch(val.trim())) {
+                      return 'Email không hợp lệ';
+                    }
                     return null;
                   },
                   decoration: const InputDecoration(
@@ -117,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: _obscurePassword,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu';
+                      return 'Nhập mật khẩu';
                     }
                     if (val.length < 6) return 'Mật khẩu tối thiểu 6 ký tự';
                     return null;

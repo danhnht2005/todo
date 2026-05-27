@@ -39,15 +39,13 @@ class _AddTaskBarState extends State<AddTaskBar> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkMode;
-
     return FloatingActionButton(
       onPressed: () => _showAddTaskBar(context),
       backgroundColor: widget.accentColor,
       shape: const CircleBorder(),
-      child: Icon(
+      child: const Icon(
         Icons.add,
-        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+        color: Colors.white,
       ),
     );
   }
@@ -68,6 +66,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
         ),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -82,7 +81,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.add, color: widget.accentColor),
+                  Icon(Icons.add_circle_outline_rounded, color: widget.accentColor),
                   const SizedBox(width: AppSizes.sm),
                   Expanded(
                     child: TextField(
@@ -98,12 +97,20 @@ class _AddTaskBarState extends State<AddTaskBar> {
                       onTap: () {}, // Xóa setState không dùng
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_upward_rounded,
-                      color: widget.accentColor,
-                    ),
-                    onPressed: _handleSubimit,
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _controller,
+                    builder: (context, value, child) {
+                      final isNotEmpty = value.text.trim().isNotEmpty;
+                      return IconButton(
+                        icon: Icon(
+                          Icons.arrow_upward_rounded,
+                          color: isNotEmpty
+                              ? widget.accentColor
+                              : Colors.grey.withValues(alpha: 0.5),
+                        ),
+                        onPressed: isNotEmpty ? _handleSubimit : null,
+                      );
+                    },
                   ),
                 ],
               ),

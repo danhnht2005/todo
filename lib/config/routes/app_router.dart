@@ -10,6 +10,7 @@ import '../../features/task/pages/important_page/important_page.dart';
 import '../../features/auth/pages/register_page.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/task/pages/my_day_page/my_day_page.dart';
+import '../../features/task/pages/dashboard_page/dashboard_page.dart';
 import '../../features/task/widgets/main_layout.dart';
 
 /// AppRouter — Cấu hình GoRouter
@@ -43,7 +44,8 @@ class AppRouter {
           return MainLayout(child: child);
         },
         routes: [
-          GoRoute(path: '/', builder: (context, state) => const MyDayPage()),
+          GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
+          GoRoute(path: '/my-day', builder: (context, state) => const MyDayPage()),
           GoRoute(
             path: '/important',
             builder: (context, state) => const ImportantPage(),
