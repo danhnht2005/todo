@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/task_list.dart';
+import '../../../../core/widgets/add_task_bar.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../providers/task_provider.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -26,58 +27,82 @@ class _PlannedPageState extends State<PlannedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        // Header
-        _PlannedHeader(),
+        Column(
+          children: [
+            // Header
+            _PlannedHeader(),
 
-        Expanded(
-          child: Consumer<TaskProvider>(
-            builder: (context, provider, child) {
-              if (provider.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (provider.errorMessage != null) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 48,
-                        color: AppColors.error,
+            Expanded(
+              child: Consumer<TaskProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (provider.errorMessage != null) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: AppColors.error,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            provider.errorMessage!,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () =>
+                                provider.loadTasks(hasDueDate: true),
+                            child: const Text('Thử lại'),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      Text(provider.errorMessage!, textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => provider.loadTasks(hasDueDate: true),
-                        child: const Text('Thử lại'),
-                      ),
-                    ],
-                  ),
-                );
-              }
+                    );
+                  }
 
-              final incomplete = provider.tasks
-                  .where((t) => !t.isCompleted)
-                  .toList();
-              final completed = provider.tasks
-                  .where((t) => t.isCompleted)
-                  .toList();
+                  final incomplete = provider.tasks
+                      .where((t) => !t.isCompleted)
+                      .toList();
+                  final completed = provider.tasks
+                      .where((t) => t.isCompleted)
+                      .toList();
 
-              if (incomplete.isEmpty && completed.isEmpty) {
-                return const EmptyStateWidget(
-                  icon: Icons.calendar_month_outlined,
-                  title: 'Không có task đã lên kế hoạch',
-                  subtitle:
-                      'Tác vụ có ngày đến hạn hoặc lời nhắc sẽ hiện ở đây.',
-                  iconColor: AppColors.planned,
-                );
-              }
+                  if (incomplete.isEmpty && completed.isEmpty) {
+                    return const EmptyStateWidget(
+                      icon: Icons.calendar_month_outlined,
+                      title: 'Không có task đã lên kế hoạch',
+                      subtitle:
+                          'Tác vụ có ngày đến hạn hoặc lời nhắc sẽ hiện ở đây.',
+                      iconColor: AppColors.planned,
+                    );
+                  }
 
-              return TaskList(incomplete: incomplete, completed: completed);
+                  return TaskList(incomplete: incomplete, completed: completed);
+                },
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          right: 20,
+          bottom: 50,
+          child: AddTaskBar(
+            onSubmit: (title) {
+              final today = DateTime.now();
+              final dateStr =
+                  '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+              context.read<TaskProvider>().addTask(
+                title: title,
+                dueDate: dateStr,
+              );
             },
+            accentColor: AppColors.planned,
           ),
         ),
       ],
