@@ -5,7 +5,7 @@ import '../constants/app_sizes.dart';
 import '../utils/extensions.dart';
 
 class AddTaskBar extends StatefulWidget {
-  final Function(String title, String? dueDate) onSubmit;
+  final Function(String title, String? dueDate, String? reminderAt) onSubmit;
   final Color accentColor;
 
   const AddTaskBar({
@@ -50,9 +50,22 @@ class _AddTaskBarState extends State<AddTaskBar> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
+  String _formatReminder(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final dateOnly = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final timeStr = DateFormat('HH:mm').format(dateTime);
+
+    if (dateOnly == today) return 'Hôm nay, $timeStr';
+    if (dateOnly == tomorrow) return 'Ngày mai, $timeStr';
+    return '${DateFormat('dd/MM/yyyy').format(dateTime)}, $timeStr';
+  }
+
   void _showAddTaskBar(BuildContext context) {
     final isDark = context.isDarkMode;
     DateTime? selectedDate;
+    DateTime? selectedReminder;
 
     showModalBottomSheet(
       context: context,
@@ -85,13 +98,61 @@ class _AddTaskBarState extends State<AddTaskBar> {
             });
           }
 
+          Future<void> pickReminder() async {
+            final now = DateTime.now();
+            // Chọn ngày nhắc nhở
+            final pickedDate = await showDatePicker(
+              context: sheetContext,
+              initialDate: selectedReminder ?? now,
+              firstDate: now.subtract(const Duration(days: 1)),
+              lastDate: now.add(const Duration(days: 365 * 5)),
+              helpText: 'Chọn ngày nhắc nhở',
+              cancelText: 'Hủy',
+              confirmText: 'Tiếp theo',
+            );
+            if (pickedDate == null) return;
+
+            // Chọn giờ nhắc nhở
+            if (!sheetContext.mounted) return;
+            final pickedTime = await showTimePicker(
+              context: sheetContext,
+              initialTime: selectedReminder != null
+                  ? TimeOfDay.fromDateTime(selectedReminder!)
+                  : TimeOfDay.fromDateTime(now.add(const Duration(hours: 1))),
+              helpText: 'Chọn giờ nhắc nhở',
+              cancelText: 'Hủy',
+              confirmText: 'Xác nhận',
+            );
+            if (pickedTime == null) return;
+
+            setSheetState(() {
+              selectedReminder = DateTime(
+                pickedDate.year,
+                pickedDate.month,
+                pickedDate.day,
+                pickedTime.hour,
+                pickedTime.minute,
+              );
+            });
+          }
+
+          void clearReminder() {
+            setSheetState(() {
+              selectedReminder = null;
+            });
+          }
+
           void submit() {
             if (_controller.text.trim().isNotEmpty) {
               String? dueDateStr;
               if (selectedDate != null) {
                 dueDateStr = DateFormat('yyyy-MM-dd').format(selectedDate!);
               }
-              widget.onSubmit(_controller.text.trim(), dueDateStr);
+              String? reminderStr;
+              if (selectedReminder != null) {
+                reminderStr = selectedReminder!.toIso8601String();
+              }
+              widget.onSubmit(_controller.text.trim(), dueDateStr, reminderStr);
               _controller.clear();
               Navigator.of(sheetContext).pop();
             }
@@ -99,6 +160,13 @@ class _AddTaskBarState extends State<AddTaskBar> {
 
           final isDateActive = selectedDate != null;
           final dateColor = isDateActive
+              ? widget.accentColor
+              : (isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondary);
+
+          final isReminderActive = selectedReminder != null;
+          final reminderColor = isReminderActive
               ? widget.accentColor
               : (isDark
                     ? AppColors.textSecondaryDark
@@ -209,6 +277,53 @@ class _AddTaskBarState extends State<AddTaskBar> {
                               child: Icon(
                                 Icons.close_rounded,
                                 color: dateColor.withValues(alpha: 0.5),
+                                size: 16,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // ─── Reminder row ───
+                  InkWell(
+                    onTap: pickReminder,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 2,
+                        vertical: AppSizes.sm,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            isReminderActive
+                                ? Icons.notifications_active
+                                : Icons.notifications_none_outlined,
+                            color: reminderColor,
+                            size: 20,
+                          ),
+                          const SizedBox(width: AppSizes.sm),
+                          Expanded(
+                            child: Text(
+                              isReminderActive
+                                  ? 'Nhắc nhở ${_formatReminder(selectedReminder!)}'
+                                  : 'Thêm lời nhắc',
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                color: reminderColor,
+                                fontWeight: isReminderActive
+                                    ? FontWeight.w500
+                                    : FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          if (isReminderActive)
+                            GestureDetector(
+                              onTap: clearReminder,
+                              child: Icon(
+                                Icons.close_rounded,
+                                color: reminderColor.withValues(alpha: 0.5),
                                 size: 16,
                               ),
                             ),
