@@ -7,11 +7,13 @@ import '../utils/extensions.dart';
 class AddTaskBar extends StatefulWidget {
   final Function(String title, String? dueDate, String? reminderAt) onSubmit;
   final Color accentColor;
+  final DateTime? initialDueDate;
 
   const AddTaskBar({
     super.key,
     required this.onSubmit,
     this.accentColor = AppColors.primary,
+    this.initialDueDate,
   });
 
   @override
@@ -64,7 +66,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
 
   void _showAddTaskBar(BuildContext context) {
     final isDark = context.isDarkMode;
-    DateTime? selectedDate;
+    DateTime? selectedDate = widget.initialDueDate;
     DateTime? selectedReminder;
 
     showModalBottomSheet(
