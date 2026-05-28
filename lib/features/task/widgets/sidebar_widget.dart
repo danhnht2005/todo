@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'build_new_list_button.dart';
 import 'build_custom_list_item.dart';
@@ -10,7 +9,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
 import '../../auth/services/auth_service.dart';
-import '../../auth/providers/auth_provider.dart';
 
 /// Sidebar
 class SidebarWidget extends StatefulWidget {
