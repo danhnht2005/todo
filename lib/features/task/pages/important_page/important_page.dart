@@ -77,7 +77,7 @@ class _ImportantPageState extends State<ImportantPage> {
                   if (incomplete.isEmpty && completed.isEmpty) {
                     return const EmptyStateWidget(
                       icon: Icons.star_outline_rounded,
-                      title: 'Không có task quan trọng',
+                      title: 'Không có tác vụ quan trọng',
                       subtitle:
                           'Hãy thử gắn sao một số tác vụ đẻ xem chúng ở đây',
                       iconColor: AppColors.important,
