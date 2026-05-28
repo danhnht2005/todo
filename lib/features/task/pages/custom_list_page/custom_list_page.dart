@@ -92,8 +92,8 @@ class _CustomListPageState extends State<CustomListPage> {
                   if (incomplete.isEmpty && completed.isEmpty) {
                     return const EmptyStateWidget(
                       icon: Icons.folder_open_rounded,
-                      title: 'Chưa có task trong danh sách này',
-                      subtitle: 'Nhấn + bên dưới để thêm task mới.',
+                      title: 'Không có tác vụ trong danh sách này',
+                      subtitle: 'Hãy thử thêm một số tác vụ để xem chúng ở đây',
                       iconColor: AppColors.primary,
                     );
                   }
