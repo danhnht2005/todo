@@ -95,8 +95,12 @@ class _MyDayPageState extends State<MyDayPage> {
           right: 20,
           bottom: 50,
           child: AddTaskBar(
-            onSubmit: (title) {
-              context.read<TaskProvider>().addTask(title: title, isMyDay: true);
+            onSubmit: (title, dueDate) {
+              context.read<TaskProvider>().addTask(
+                    title: title,
+                    isMyDay: true,
+                    dueDate: dueDate,
+                  );
             },
             accentColor: AppColors.myDay,
           ),

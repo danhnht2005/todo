@@ -93,14 +93,14 @@ class _PlannedPageState extends State<PlannedPage> {
           right: 20,
           bottom: 50,
           child: AddTaskBar(
-            onSubmit: (title) {
-              final today = DateTime.now();
-              final dateStr =
-                  '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+            onSubmit: (title, dueDate) {
+              // Trang Planned: luôn có dueDate, fallback = hôm nay
+              final effectiveDate = dueDate ??
+                  '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
               context.read<TaskProvider>().addTask(
-                title: title,
-                dueDate: dateStr,
-              );
+                    title: title,
+                    dueDate: effectiveDate,
+                  );
             },
             accentColor: AppColors.planned,
           ),

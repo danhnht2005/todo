@@ -94,11 +94,12 @@ class _ImportantPageState extends State<ImportantPage> {
           right: 20,
           bottom: 50,
           child: AddTaskBar(
-            onSubmit: (title) {
+            onSubmit: (title, dueDate) {
               context.read<TaskProvider>().addTask(
-                title: title,
-                isImportant: true,
-              );
+                    title: title,
+                    isImportant: true,
+                    dueDate: dueDate,
+                  );
             },
             accentColor: AppColors.important,
           ),

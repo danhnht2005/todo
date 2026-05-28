@@ -92,8 +92,11 @@ class _AllTasksPageState extends State<AllTasksPage> {
           right: 20,
           bottom: 50,
           child: AddTaskBar(
-            onSubmit: (title) {
-              context.read<TaskProvider>().addTask(title: title);
+            onSubmit: (title, dueDate) {
+              context.read<TaskProvider>().addTask(
+                    title: title,
+                    dueDate: dueDate,
+                  );
             },
             accentColor: AppColors.allTasks,
           ),
