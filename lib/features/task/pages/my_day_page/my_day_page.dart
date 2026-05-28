@@ -76,9 +76,9 @@ class _MyDayPageState extends State<MyDayPage> {
                   if (incomplete.isEmpty && completed.isEmpty) {
                     return const EmptyStateWidget(
                       icon: Icons.wb_sunny_outlined,
-                      title: 'Tập trung vào ngày của bạn',
+                      title: 'Không có tác vụ trong ngày của tôi',
                       subtitle:
-                          'Thêm công việc bạn muốn hoàn thành hôm nay.\nNhấn + ở bên dưới để bắt đầu.',
+                          'Tác vụ bạn muốn hoàn thành hôm nay sẽ hiện ở đây.',
                       iconColor: AppColors.myDay,
                     );
                   }
