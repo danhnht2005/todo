@@ -71,7 +71,7 @@ class _PlannedPageState extends State<PlannedPage> {
                   icon: Icons.calendar_month_outlined,
                   title: 'Không có task đã lên kế hoạch',
                   subtitle:
-                      'Thêm công việc bạn muốn hoàn thành hôm nay.\nNhấn + ở bên dưới để bắt đầu.',
+                      'Tác vụ có ngày đến hạn hoặc lời nhắc sẽ hiện ở đây.',
                   iconColor: AppColors.planned,
                 );
               }
