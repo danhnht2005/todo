@@ -41,7 +41,7 @@ class _SidebarWidgetState extends State<SidebarWidget> {
         child: Column(
           children: [
             // User Profile Header
-            buildUserHeaderSideBar(isDark, authRepo),
+            buildUserHeaderSideBar(context, isDark, authRepo),
             const SizedBox(height: AppSizes.sm),
 
             // Smart Lists

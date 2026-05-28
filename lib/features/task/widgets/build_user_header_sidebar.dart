@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../auth/services/auth_service.dart';
 
-Widget buildUserHeaderSideBar(bool isDark, AuthService authRepo) {
+Widget buildUserHeaderSideBar(
+  BuildContext context,
+  bool isDark,
+  AuthService authRepo,
+) {
   final name = authRepo.displayName.isNotEmpty
       ? authRepo.displayName
       : 'Người dùng';
@@ -21,7 +26,7 @@ Widget buildUserHeaderSideBar(bool isDark, AuthService authRepo) {
     padding: const EdgeInsets.fromLTRB(
       AppSizes.lg,
       AppSizes.lg,
-      AppSizes.lg,
+      AppSizes.sm,
       AppSizes.sm,
     ),
     child: Row(
@@ -80,6 +85,19 @@ Widget buildUserHeaderSideBar(bool isDark, AuthService authRepo) {
                 ),
               ],
             ],
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            Navigator.pop(context); // Close drawer first
+            context.push('/settings');
+          },
+          icon: Icon(
+            Icons.settings_rounded,
+            color: isDark
+                ? AppColors.textSecondaryDark
+                : AppColors.textSecondary,
+            size: AppSizes.iconMd,
           ),
         ),
       ],
