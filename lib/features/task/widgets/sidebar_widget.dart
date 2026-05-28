@@ -143,57 +143,7 @@ class _SidebarWidgetState extends State<SidebarWidget> {
               padding: const EdgeInsets.all(AppSizes.sm),
               child: buildNewListButton(context, isDark),
             ),
-
-            // Logout Button
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSizes.sm,
-                0,
-                AppSizes.sm,
-                AppSizes.sm,
-              ),
-              child: _buildLogoutButton(context, isDark),
-            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLogoutButton(BuildContext context, bool isDark) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () async {
-          await context.read<AuthProvider>().logout();
-          if (context.mounted) {
-            context.go('/login');
-          }
-        },
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.md,
-            vertical: AppSizes.md,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.logout_rounded,
-                color: AppColors.error,
-                size: AppSizes.iconMd,
-              ),
-              const SizedBox(width: AppSizes.md),
-              Text(
-                'Đăng xuất',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.error,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

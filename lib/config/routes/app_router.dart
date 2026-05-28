@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/task/pages/search_page/search_page.dart';
 import '../../features/task/pages/setting_page/setting_page.dart';
+import '../../features/task/pages/setting_page/theme_page.dart';
 import '../../features/task/pages/task_detail_page/task_detail_page.dart';
 import '../../features/task/pages/custom_list_page/custom_list_page.dart';
 import '../../features/task/pages/all_tasks_page/all_tasks_page.dart';
@@ -84,6 +85,12 @@ class AppRouter {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingPage(),
+        routes: [
+          GoRoute(
+            path: 'theme',
+            builder: (context, state) => const ThemePage(),
+          ),
+        ],
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(
