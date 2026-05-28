@@ -78,7 +78,8 @@ class _ImportantPageState extends State<ImportantPage> {
                     return const EmptyStateWidget(
                       icon: Icons.star_outline_rounded,
                       title: 'Không có task quan trọng',
-                      subtitle: 'Đánh dấu ⭐ để thêm task vào đây.',
+                      subtitle:
+                          'Hãy thử gắn sao một số tác vụ đẻ xem chúng ở đây',
                       iconColor: AppColors.important,
                     );
                   }
