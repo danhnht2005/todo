@@ -76,8 +76,8 @@ class _AllTasksPageState extends State<AllTasksPage> {
                   if (incomplete.isEmpty && completed.isEmpty) {
                     return const EmptyStateWidget(
                       icon: Icons.task_outlined,
-                      title: 'No tasks yet',
-                      subtitle: 'Press + to add a new task.',
+                      title: 'Không có tác vụ nào',
+                      subtitle: 'Các tác vụ của bạn sẽ hiển thị ở đây.',
                       iconColor: AppColors.allTasks,
                     );
                   }
