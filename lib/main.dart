@@ -8,6 +8,7 @@ import 'features/task/providers/task_provider.dart';
 import 'features/task_list/services/task_list_service.dart';
 import 'features/task_list/providers/task_list_provider.dart';
 import 'config/themes/app_theme.dart';
+import 'config/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/services/auth_service.dart';
@@ -55,22 +56,30 @@ class MyApp extends StatelessWidget {
           create: (context) =>
               TaskListProvider(repository: context.read<TaskListService>()),
         ),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: MaterialApp.router(
-        title: 'To-Do',
-        debugShowCheckedModeBanner: false,
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp.router(
+            title: 'To-Do',
+            debugShowCheckedModeBanner: false,
 
-        // BotToast
-        builder: BotToastInit(),
+            // BotToast
+            builder: BotToastInit(),
 
-        // Routing
-        routerConfig: AppRouter.router,
+            // Routing
+            routerConfig: AppRouter.router,
 
-        // Theme
-        theme: AppTheme.lightTheme,
+            // Theme
+            theme: AppTheme.lightTheme,
 
-        // Dark Theme
-        darkTheme: AppTheme.darkTheme,
+            // Dark Theme
+            darkTheme: AppTheme.darkTheme,
+
+            // Theme Mode
+            themeMode: themeProvider.themeMode,
+          );
+        },
       ),
     );
   }
