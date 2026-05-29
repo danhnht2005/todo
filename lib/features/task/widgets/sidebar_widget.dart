@@ -123,7 +123,9 @@ class _SidebarWidgetState extends State<SidebarWidget> {
                   // Custom Lists
                   Consumer<TaskListProvider>(
                     builder: (context, taskListProvider, child) {
-                      final lists = taskListProvider.lists;
+                      final lists = taskListProvider.lists
+                          .where((list) => list.isOwner)
+                          .toList();
                       if (lists.isNotEmpty) {
                         return Column(
                           children: lists
