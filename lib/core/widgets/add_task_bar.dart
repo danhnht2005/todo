@@ -85,7 +85,9 @@ class _AddTaskBarState extends State<AddTaskBar> {
     required bool isDark,
     VoidCallback? onClear,
   }) {
-    final baseColor = isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final baseColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
     final displayColor = isActive ? activeColor : baseColor;
 
     return Material(
@@ -99,16 +101,14 @@ class _AddTaskBarState extends State<AddTaskBar> {
             borderRadius: BorderRadius.circular(18),
             color: isActive
                 ? activeColor.withValues(alpha: 0.1)
-                : (isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03)),
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.03)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                color: displayColor,
-                size: 18,
-              ),
+              Icon(icon, color: displayColor, size: 18),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -145,7 +145,9 @@ class _AddTaskBarState extends State<AddTaskBar> {
     TaskListModel? selectedList;
     if (widget.initialListId != null && widget.lists != null) {
       try {
-        selectedList = widget.lists!.firstWhere((l) => l.id == widget.initialListId);
+        selectedList = widget.lists!.firstWhere(
+          (l) => l.id == widget.initialListId,
+        );
       } catch (_) {}
     }
 
@@ -337,25 +339,10 @@ class _AddTaskBarState extends State<AddTaskBar> {
           }
 
           final isDateActive = selectedDate != null;
-          final dateColor = isDateActive
-              ? widget.accentColor
-              : (isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondary);
 
           final isReminderActive = selectedReminder != null;
-          final reminderColor = isReminderActive
-              ? widget.accentColor
-              : (isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondary);
 
           final isListActive = selectedList != null;
-          final listColor = isListActive
-              ? widget.accentColor
-              : (isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondary);
 
           final hasLists = widget.lists != null && widget.lists!.isNotEmpty;
 
@@ -438,7 +425,9 @@ class _AddTaskBarState extends State<AddTaskBar> {
                             _buildHorizontalChip(
                               onTap: pickList,
                               icon: Icons.home_rounded,
-                              label: isListActive ? selectedList!.title : 'Tác vụ',
+                              label: isListActive
+                                  ? selectedList!.title
+                                  : 'Tác vụ',
                               isActive: isListActive,
                               activeColor: widget.accentColor,
                               isDark: isDark,
