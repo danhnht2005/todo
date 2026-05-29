@@ -19,11 +19,6 @@ class TaskListService {
         .eq('user_id', _userId)
         .order('created_at', ascending: true);
 
-    final memberResponse = await _client
-        .from('task_list_members')
-        .select('task_lists(*)')
-        .eq('user_id', _userId);
-
     final listsById = <String, TaskListModel>{};
 
     for (final json in ownedResponse as List) {
@@ -34,20 +29,63 @@ class TaskListService {
       listsById[list.id] = list;
     }
 
-    for (final json in memberResponse as List) {
-      final taskList = (json as Map<String, dynamic>)['task_lists'];
-      if (taskList == null) continue;
-
-      final list = TaskListModel.fromJson(
-        taskList as Map<String, dynamic>,
-        currentUserId: _userId,
-      );
+    for (final list in await _getSharedLists()) {
       listsById[list.id] = list;
     }
 
     final lists = listsById.values.toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
     return lists;
+  }
+
+  Future<List<TaskListModel>> _getSharedLists() async {
+    try {
+      final response = await _client.rpc('get_shared_task_lists');
+      return (response as List)
+          .map(
+            (json) => TaskListModel.fromJson(
+              json as Map<String, dynamic>,
+              isOwner: false,
+              currentUserId: _userId,
+            ),
+          )
+          .toList();
+    } on PostgrestException catch (e) {
+      final message = e.message.toLowerCase();
+      final isMissingRpc =
+          e.code == 'PGRST202' ||
+          message.contains('could not find the function');
+      if (!isMissingRpc) rethrow;
+    }
+
+    final memberResponse = await _client
+        .from('task_list_members')
+        .select('list_id')
+        .eq('user_id', _userId);
+
+    final listIds = (memberResponse as List)
+        .map((json) => (json as Map<String, dynamic>)['list_id'] as String)
+        .toSet()
+        .toList();
+
+    if (listIds.isEmpty) return [];
+
+    final sharedResponse = await _client
+        .from('task_lists')
+        .select()
+        .inFilter('id', listIds)
+        .neq('user_id', _userId)
+        .order('created_at', ascending: true);
+
+    return (sharedResponse as List)
+        .map(
+          (json) => TaskListModel.fromJson(
+            json as Map<String, dynamic>,
+            isOwner: false,
+            currentUserId: _userId,
+          ),
+        )
+        .toList();
   }
 
   /// Get detail of a list the current user can access.
