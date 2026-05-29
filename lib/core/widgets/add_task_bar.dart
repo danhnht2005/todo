@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../features/task_list/models/task_list_model.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_sizes.dart';
 import '../utils/extensions.dart';
 
 class AddTaskBar extends StatefulWidget {
-  final Function(String title, String? dueDate, String? reminderAt) onSubmit;
+  final Function(
+    String title,
+    String? dueDate,
+    String? reminderAt,
+    String? listId,
+  )
+  onSubmit;
   final Color accentColor;
   final DateTime? initialDueDate;
+
+  final List<TaskListModel>? lists;
+  final String? initialListId;
 
   const AddTaskBar({
     super.key,
     required this.onSubmit,
     this.accentColor = AppColors.primary,
     this.initialDueDate,
+    this.lists,
+    this.initialListId,
   });
 
   @override
@@ -68,6 +80,12 @@ class _AddTaskBarState extends State<AddTaskBar> {
     final isDark = context.isDarkMode;
     DateTime? selectedDate = widget.initialDueDate;
     DateTime? selectedReminder;
+    TaskListModel? selectedList;
+    if (widget.initialListId != null && widget.lists != null) {
+      try {
+        selectedList = widget.lists!.firstWhere((l) => l.id == widget.initialListId);
+      } catch (_) {}
+    }
 
     showModalBottomSheet(
       context: context,
@@ -144,6 +162,97 @@ class _AddTaskBarState extends State<AddTaskBar> {
             });
           }
 
+          /// Mở bottom sheet chọn danh sách
+          void pickList() {
+            final lists = widget.lists;
+            if (lists == null || lists.isEmpty) return;
+
+            showModalBottomSheet(
+              context: sheetContext,
+              useRootNavigator: true,
+              backgroundColor: Colors.transparent,
+              builder: (listCtx) {
+                final isListDark = listCtx.isDarkMode;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: isListDark
+                        ? AppColors.surfaceDark
+                        : AppColors.surfaceLight,
+                  ),
+                  child: SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Tùy chọn "Không xếp vào danh sách"
+                        ListTile(
+                          leading: Icon(
+                            Icons.home_rounded,
+                            color: isListDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondary,
+                          ),
+                          title: Text(
+                            'Tác vụ',
+                            style: TextStyle(
+                              color: isListDark
+                                  ? AppColors.textSecondaryDark
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                          trailing: selectedList == null
+                              ? Icon(
+                                  Icons.check_rounded,
+                                  color: widget.accentColor,
+                                )
+                              : null,
+                          onTap: () {
+                            setSheetState(() => selectedList = null);
+                            Navigator.pop(listCtx);
+                          },
+                        ),
+                        const Divider(height: 1, indent: 16, endIndent: 16),
+                        // Danh sách custom lists
+                        ...lists.map(
+                          (list) => ListTile(
+                            leading: Icon(
+                              Icons.list_rounded,
+                              color: AppColors.customList,
+                            ),
+                            title: Text(
+                              list.title,
+                              style: TextStyle(
+                                color: isListDark
+                                    ? AppColors.textPrimaryDark
+                                    : AppColors.textPrimary,
+                              ),
+                            ),
+                            trailing: selectedList?.id == list.id
+                                ? Icon(
+                                    Icons.check_rounded,
+                                    color: widget.accentColor,
+                                  )
+                                : null,
+                            onTap: () {
+                              setSheetState(() => selectedList = list);
+                              Navigator.pop(listCtx);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+
+          void clearList() {
+            setSheetState(() {
+              selectedList = null;
+            });
+          }
+
           void submit() {
             if (_controller.text.trim().isNotEmpty) {
               String? dueDateStr;
@@ -154,7 +263,12 @@ class _AddTaskBarState extends State<AddTaskBar> {
               if (selectedReminder != null) {
                 reminderStr = selectedReminder!.toIso8601String();
               }
-              widget.onSubmit(_controller.text.trim(), dueDateStr, reminderStr);
+              widget.onSubmit(
+                _controller.text.trim(),
+                dueDateStr,
+                reminderStr,
+                selectedList?.id,
+              );
               _controller.clear();
               Navigator.of(sheetContext).pop();
             }
@@ -173,6 +287,15 @@ class _AddTaskBarState extends State<AddTaskBar> {
               : (isDark
                     ? AppColors.textSecondaryDark
                     : AppColors.textSecondary);
+
+          final isListActive = selectedList != null;
+          final listColor = isListActive
+              ? widget.accentColor
+              : (isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondary);
+
+          final hasLists = widget.lists != null && widget.lists!.isNotEmpty;
 
           return Container(
             padding: EdgeInsets.only(
@@ -212,7 +335,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
                           focusNode: _focusNode,
                           autofocus: true,
                           decoration: InputDecoration(
-                            hintText: "Thêm tác vụ",
+                            hintText: "Tác vụ",
                             border: InputBorder.none,
                             hintStyle: const TextStyle(
                               color: AppColors.textHint,
@@ -240,6 +363,50 @@ class _AddTaskBarState extends State<AddTaskBar> {
                     ],
                   ),
 
+                  // ─── List picker row (chỉ hiện khi có lists) ───
+                  if (hasLists)
+                    InkWell(
+                      onTap: pickList,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 2,
+                          vertical: AppSizes.sm,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.home_rounded,
+                              color: listColor,
+                              size: 20,
+                            ),
+                            const SizedBox(width: AppSizes.sm),
+                            Expanded(
+                              child: Text(
+                                isListActive ? selectedList!.title : 'Tác vụ',
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  color: listColor,
+                                  fontWeight: isListActive
+                                      ? FontWeight.w500
+                                      : FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                            if (isListActive)
+                              GestureDetector(
+                                onTap: clearList,
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  color: listColor.withValues(alpha: 0.5),
+                                  size: 16,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+
                   // ─── Due date row ───
                   InkWell(
                     onTap: pickDate,
@@ -263,7 +430,7 @@ class _AddTaskBarState extends State<AddTaskBar> {
                             child: Text(
                               isDateActive
                                   ? 'Đến hạn ${_formatDueDate(selectedDate!)}'
-                                  : 'Thêm ngày đến hạn',
+                                  : 'Đặt ngày đến hạn',
                               style: TextStyle(
                                 fontSize: 13.5,
                                 color: dateColor,
@@ -309,8 +476,8 @@ class _AddTaskBarState extends State<AddTaskBar> {
                           Expanded(
                             child: Text(
                               isReminderActive
-                                  ? 'Nhắc nhở ${_formatReminder(selectedReminder!)}'
-                                  : 'Thêm lời nhắc',
+                                  ? 'Nhắc tôi lúc ${_formatReminder(selectedReminder!)}'
+                                  : 'Nhắc tôi',
                               style: TextStyle(
                                 fontSize: 13.5,
                                 color: reminderColor,
