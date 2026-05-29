@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/services/auth_service.dart';
 import 'config/routes/app_router.dart';
+import 'core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,9 @@ void main() async {
     url: dotenv.get('SUPABASE_URL'),
     anonKey: dotenv.get('SUPABASE_ANON_KEY'),
   );
+
+  // Initialize notification service (timezone + channels)
+  await NotificationService.instance.initialize();
 
   runApp(const MyApp());
 }
@@ -48,8 +52,10 @@ class MyApp extends StatelessWidget {
               AuthProvider(authService: context.read<AuthService>()),
         ),
         ChangeNotifierProvider(
-          create: (context) =>
-              TaskProvider(taskService: context.read<TaskService>()),
+          create: (context) => TaskProvider(
+            taskService: context.read<TaskService>(),
+            notificationService: NotificationService.instance,
+          ),
         ),
         Provider(create: (_) => TaskListService()),
         ChangeNotifierProvider(

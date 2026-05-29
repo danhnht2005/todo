@@ -238,12 +238,12 @@ class SettingPage extends StatelessWidget {
   void _showLogoutDialog(BuildContext context, bool isDark) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Đăng xuất'),
         content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(
               'Hủy',
               style: TextStyle(
@@ -255,7 +255,7 @@ class SettingPage extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               await context.read<AuthProvider>().logout();
               if (context.mounted) {
                 context.go('/login');
