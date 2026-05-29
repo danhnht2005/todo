@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../task_list/providers/task_list_provider.dart';
+import '../../../task_list/widgets/share_task_list_dialog.dart';
 import '../../../../core/widgets/add_task_bar.dart';
 import '../../../../core/widgets/confirm_delete_dialog.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
@@ -134,7 +135,7 @@ class _CustomListPageState extends State<CustomListPage> {
 }
 
 // ─── Enum cho menu options ───
-enum _ListMenuAction { rename, delete }
+enum _ListMenuAction { share, rename, delete }
 
 class _CustomListHeader extends StatelessWidget {
   final String listId;
@@ -240,6 +241,19 @@ class _CustomListHeader extends StatelessWidget {
     );
   }
 
+  Future<void> _showShareDialog(
+    BuildContext context,
+    String listTitle,
+  ) async {
+    await showDialog(
+      context: context,
+      builder: (_) => ShareTaskListDialog(
+        listId: listId,
+        listTitle: listTitle,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
@@ -247,6 +261,7 @@ class _CustomListHeader extends StatelessWidget {
       builder: (context, provider, child) {
         final listTitle =
             provider.selectedTaskList?.title ?? 'Danh sách tùy chỉnh';
+        final isOwner = provider.selectedTaskList?.isOwner ?? true;
 
         return Container(
           width: double.infinity,
@@ -298,6 +313,8 @@ class _CustomListHeader extends StatelessWidget {
                 tooltip: 'Tùy chọn',
                 onSelected: (action) {
                   switch (action) {
+                    case _ListMenuAction.share:
+                      _showShareDialog(context, listTitle);
                     case _ListMenuAction.rename:
                       _showRenameDialog(context, listTitle);
                     case _ListMenuAction.delete:
@@ -305,33 +322,57 @@ class _CustomListHeader extends StatelessWidget {
                   }
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
-                    value: _ListMenuAction.rename,
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit_rounded, size: 20),
-                        SizedBox(width: 12),
-                        Text('Đổi tên'),
-                      ],
+                  if (!isOwner)
+                    const PopupMenuItem(
+                      enabled: false,
+                      child: Row(
+                        children: [
+                          Icon(Icons.group_rounded, size: 20),
+                          SizedBox(width: 12),
+                          Text('Được chia sẻ với bạn'),
+                        ],
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: _ListMenuAction.delete,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.delete_outline_rounded,
-                          size: 20,
-                          color: AppColors.error,
-                        ),
-                        SizedBox(width: 12),
-                        Text(
-                          'Xóa danh sách',
-                          style: TextStyle(color: AppColors.error),
-                        ),
-                      ],
+                  if (isOwner)
+                    const PopupMenuItem(
+                      value: _ListMenuAction.share,
+                      child: Row(
+                        children: [
+                          Icon(Icons.ios_share_rounded, size: 20),
+                          SizedBox(width: 12),
+                          Text('Chia sẻ'),
+                        ],
+                      ),
                     ),
-                  ),
+                  if (isOwner)
+                    const PopupMenuItem(
+                      value: _ListMenuAction.rename,
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit_rounded, size: 20),
+                          SizedBox(width: 12),
+                          Text('Đổi tên'),
+                        ],
+                      ),
+                    ),
+                  if (isOwner)
+                    const PopupMenuItem(
+                      value: _ListMenuAction.delete,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.delete_outline_rounded,
+                            size: 20,
+                            color: AppColors.error,
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            'Xóa danh sách',
+                            style: TextStyle(color: AppColors.error),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ],
