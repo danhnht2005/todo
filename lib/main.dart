@@ -21,7 +21,7 @@ void main() async {
   // Initialize locale data for Vietnamese date formatting
   await initializeDateFormatting('vi');
 
-  await dotenv.load();
+  await dotenv.load(fileName: 'assets/.env');
 
   await Supabase.initialize(
     url: dotenv.get('SUPABASE_URL'),

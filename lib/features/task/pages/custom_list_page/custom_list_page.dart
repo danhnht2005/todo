@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../task_list/providers/task_list_provider.dart';
+import '../../../task_list/models/task_list_model.dart';
 import '../../../task_list/widgets/share_task_list_dialog.dart';
 import '../../../../core/widgets/add_task_bar.dart';
 import '../../../../core/widgets/confirm_delete_dialog.dart';
@@ -46,6 +47,8 @@ class _CustomListPageState extends State<CustomListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isSharedList =
+        context.watch<TaskListProvider>().selectedTaskList?.isOwner == false;
     return Stack(
       children: [
         Column(
@@ -102,7 +105,11 @@ class _CustomListPageState extends State<CustomListPage> {
                     );
                   }
 
-                  return TaskList(incomplete: incomplete, completed: completed);
+                  return TaskList(
+                    incomplete: incomplete,
+                    completed: completed,
+                    showCreator: isSharedList,
+                  );
                 },
               ),
             ),
@@ -141,6 +148,18 @@ class _CustomListHeader extends StatelessWidget {
   final String listId;
 
   const _CustomListHeader({required this.listId});
+
+  String? _ownerLabel(TaskListModel? list) {
+    if (list == null || list.isOwner) return null;
+
+    final name = list.ownerName?.trim();
+    if (name != null && name.isNotEmpty) return name;
+
+    final email = list.ownerEmail?.trim();
+    if (email != null && email.isNotEmpty) return email;
+
+    return 'Người dùng';
+  }
 
   /// Hiển thị dialog đổi tên danh sách
   Future<void> _showRenameDialog(
@@ -259,9 +278,10 @@ class _CustomListHeader extends StatelessWidget {
     final isDark = context.isDarkMode;
     return Consumer<TaskListProvider>(
       builder: (context, provider, child) {
-        final listTitle =
-            provider.selectedTaskList?.title ?? 'Danh sách tùy chỉnh';
-        final isOwner = provider.selectedTaskList?.isOwner ?? true;
+        final list = provider.selectedTaskList;
+        final listTitle = list?.title ?? 'Danh sách tùy chỉnh';
+        final isOwner = list?.isOwner ?? true;
+        final ownerLabel = _ownerLabel(list);
 
         return Container(
           width: double.infinity,
@@ -283,22 +303,39 @@ class _CustomListHeader extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(
-                Icons.list_rounded,
+              Icon(
+                isOwner ? Icons.list_rounded : Icons.group_rounded,
                 color: AppColors.customList,
                 size: 28,
               ),
               const SizedBox(width: AppSizes.md),
               Expanded(
-                child: Text(
-                  listTitle,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: isDark
-                        ? AppColors.textPrimaryDark
-                        : AppColors.textPrimary,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      listTitle,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: isDark
+                            ? AppColors.textPrimaryDark
+                            : AppColors.textPrimary,
+                      ),
+                    ),
+                    if (ownerLabel != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Chia sẻ bởi $ownerLabel',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
 

@@ -19,9 +19,10 @@ class TaskService {
         .eq('user_id', _userId)
         .order('created_at', ascending: false);
 
-    return (response as List)
+    final tasks = (response as List)
         .map((json) => TaskModel.fromJson(json as Map<String, dynamic>))
-        .toList();
+      .toList();
+    return _attachCreators(tasks);
   }
 
   /// Lấy tasks theo filter
@@ -58,9 +59,10 @@ class TaskService {
 
     final response = await query.order('created_at', ascending: false);
 
-    return (response as List)
+    final tasks = (response as List)
         .map((json) => TaskModel.fromJson(json as Map<String, dynamic>))
-        .toList();
+      .toList();
+    return _attachCreators(tasks);
   }
 
   /// Lấy chi tiết 1 task theo id
@@ -71,7 +73,9 @@ class TaskService {
         .eq('id', id)
         .single();
 
-    return TaskModel.fromJson(response);
+    final task = TaskModel.fromJson(response);
+    final tasks = await _attachCreators([task]);
+    return tasks.isNotEmpty ? tasks.first : task;
   }
 
   /// Tạo task mới
@@ -157,9 +161,10 @@ class TaskService {
         .ilike('title', '%$query%')
         .order('created_at', ascending: false);
 
-    return (response as List)
+    final tasks = (response as List)
         .map((json) => TaskModel.fromJson(json as Map<String, dynamic>))
-        .toList();
+      .toList();
+    return _attachCreators(tasks);
   }
 
   // ═══════════════════════════════════════════
@@ -197,5 +202,38 @@ class TaskService {
   /// Xóa step
   Future<void> deleteStep(String stepId) async {
     await _client.from('steps').delete().eq('id', stepId);
+  }
+
+  Future<List<TaskModel>> _attachCreators(List<TaskModel> tasks) async {
+    if (tasks.isEmpty) return tasks;
+
+    final creatorIds = tasks.map((task) => task.userId).toSet().toList();
+    if (creatorIds.isEmpty) return tasks;
+
+    try {
+      final response = await _client
+          .from('profiles')
+          .select('id, full_name, email')
+          .inFilter('id', creatorIds);
+
+      final profileById = <String, Map<String, dynamic>>{};
+      for (final item in response as List) {
+        final profile = item as Map<String, dynamic>;
+        profileById[profile['id'] as String] = profile;
+      }
+
+      return tasks
+          .map((task) {
+            final profile = profileById[task.userId];
+            if (profile == null) return task;
+            return task.copyWith(
+              createdByName: profile['full_name'] as String?,
+              createdByEmail: profile['email'] as String?,
+            );
+          })
+          .toList(growable: false);
+    } on PostgrestException {
+      return tasks;
+    }
   }
 }

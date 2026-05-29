@@ -15,6 +15,16 @@ Widget buildCustomListItem({
   final String currentPath = routerState.uri.path;
   final bool isSelected = currentPath == '/custom-list/${list.id}';
 
+  String ownerLabel() {
+    final name = list.ownerName?.trim();
+    if (name != null && name.isNotEmpty) return name;
+
+    final email = list.ownerEmail?.trim();
+    if (email != null && email.isNotEmpty) return email;
+
+    return 'Người dùng';
+  }
+
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
     child: Material(
@@ -46,15 +56,43 @@ Widget buildCustomListItem({
               ),
               const SizedBox(width: AppSizes.md),
               Expanded(
-                child: Text(
-                  list.title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color: isSelected 
-                        ? (isDark ? Colors.white : AppColors.customList) 
-                        : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimary),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      list.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
+                        color: isSelected
+                            ? (isDark ? Colors.white : AppColors.customList)
+                            : (isDark
+                                  ? AppColors.textPrimaryDark
+                                  : AppColors.textPrimary),
+                      ),
+                    ),
+                    if (!list.isOwner) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Chia sẻ bởi ${ownerLabel()}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: isSelected
+                              ? (isDark
+                                    ? Colors.white70
+                                    : AppColors.customList)
+                              : (isDark
+                                    ? AppColors.textSecondaryDark
+                                    : AppColors.textSecondary),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],

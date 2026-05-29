@@ -3,6 +3,7 @@ import 'step_model.dart';
 /// TaskModel
 class TaskModel {
   final String id;
+  final String userId;
   final String title;
   final String? note;
   final bool isCompleted;
@@ -10,6 +11,8 @@ class TaskModel {
   final bool isMyDay;
   final String? listId;
   final List<StepModel> steps;
+  final String? createdByName;
+  final String? createdByEmail;
   final DateTime? dueDate;
   final DateTime? reminderAt;
   final DateTime? completedAt;
@@ -18,6 +21,7 @@ class TaskModel {
 
   const TaskModel({
     required this.id,
+    required this.userId,
     required this.title,
     this.note,
     this.isCompleted = false,
@@ -25,6 +29,8 @@ class TaskModel {
     this.isMyDay = false,
     this.listId,
     this.steps = const [],
+    this.createdByName,
+    this.createdByEmail,
     this.dueDate,
     this.reminderAt,
     this.completedAt,
@@ -39,6 +45,7 @@ class TaskModel {
 
   TaskModel copyWith({
     String? id,
+    String? userId,
     String? title,
     String? note,
     bool? isCompleted,
@@ -46,6 +53,8 @@ class TaskModel {
     bool? isMyDay,
     String? listId,
     List<StepModel>? steps,
+    String? createdByName,
+    String? createdByEmail,
     DateTime? dueDate,
     DateTime? reminderAt,
     DateTime? completedAt,
@@ -54,6 +63,7 @@ class TaskModel {
   }) {
     return TaskModel(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       title: title ?? this.title,
       note: note ?? this.note,
       isCompleted: isCompleted ?? this.isCompleted,
@@ -61,6 +71,8 @@ class TaskModel {
       isMyDay: isMyDay ?? this.isMyDay,
       listId: listId ?? this.listId,
       steps: steps ?? this.steps,
+      createdByName: createdByName ?? this.createdByName,
+      createdByEmail: createdByEmail ?? this.createdByEmail,
       dueDate: dueDate ?? this.dueDate,
       reminderAt: reminderAt ?? this.reminderAt,
       completedAt: completedAt ?? this.completedAt,
@@ -77,8 +89,11 @@ class TaskModel {
           .toList();
     }
 
+    final profile = json['profiles'] as Map<String, dynamic>?;
+
     return TaskModel(
       id: json['id'] as String,
+      userId: json['user_id'] as String,
       title: json['title'] as String,
       note: json['note'] as String?,
       isCompleted: json['is_completed'] as bool? ?? false,
@@ -86,6 +101,8 @@ class TaskModel {
       isMyDay: json['is_my_day'] as bool? ?? false,
       listId: json['list_id'] as String?,
       steps: steps,
+      createdByName: profile?['full_name'] as String?,
+      createdByEmail: profile?['email'] as String?,
       dueDate: json['due_date'] != null
           ? DateTime.parse(json['due_date'] as String)
           : null,

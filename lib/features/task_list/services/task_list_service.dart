@@ -35,7 +35,7 @@ class TaskListService {
 
     final lists = listsById.values.toList()
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    return lists;
+    return _attachOwnerProfiles(lists);
   }
 
   Future<List<TaskListModel>> _getSharedLists() async {
@@ -95,8 +95,9 @@ class TaskListService {
         .select()
         .eq('id', id)
         .single();
-
-    return TaskListModel.fromJson(response, currentUserId: _userId);
+    final list = TaskListModel.fromJson(response, currentUserId: _userId);
+    final enriched = await _attachOwnerProfiles([list]);
+    return enriched.isNotEmpty ? enriched.first : list;
   }
 
   /// Create a new list.
@@ -238,6 +239,42 @@ class TaskListService {
 
     if (list['user_id'] != _userId) {
       throw Exception('Chi chu so huu moi co the chia se danh sach');
+    }
+  }
+
+  Future<List<TaskListModel>> _attachOwnerProfiles(
+    List<TaskListModel> lists,
+  ) async {
+    if (lists.isEmpty) return lists;
+
+    final ownerIds = lists.map((list) => list.userId).toSet().toList();
+    if (ownerIds.isEmpty) return lists;
+
+    try {
+      final response = await _client
+          .from('profiles')
+          .select('id, full_name, email, avatar_url')
+          .inFilter('id', ownerIds);
+
+      final profileById = <String, Map<String, dynamic>>{};
+      for (final item in response as List) {
+        final profile = item as Map<String, dynamic>;
+        profileById[profile['id'] as String] = profile;
+      }
+
+      return lists
+          .map((list) {
+            final profile = profileById[list.userId];
+            if (profile == null) return list;
+            return list.copyWith(
+              ownerName: profile['full_name'] as String?,
+              ownerEmail: profile['email'] as String?,
+              ownerAvatarUrl: profile['avatar_url'] as String?,
+            );
+          })
+          .toList(growable: false);
+    } on PostgrestException {
+      return lists;
     }
   }
 }
