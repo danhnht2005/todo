@@ -101,10 +101,6 @@ void _showCreateListDialog(BuildContext context) {
                 title: title,
               );
               Navigator.pop(ctx);
-              BotToast.showText(
-                text: 'Đã tạo danh sách: $title',
-                align: const Alignment(0, 0.8),
-              );
             },
             child: const Text(
               'Tạo danh sách',
