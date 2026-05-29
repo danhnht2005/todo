@@ -93,7 +93,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         CircleAvatar(
                           radius: 22,
-                          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                          backgroundColor: AppColors.primary.withValues(
+                            alpha: 0.1,
+                          ),
                           child: Icon(
                             Icons.person_rounded,
                             color: AppColors.primary,
@@ -106,7 +108,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
                     // Progress Ring Card
                     _buildProgressCard(
-                        context, completedTasks, totalTasks, completionRate),
+                      context,
+                      completedTasks,
+                      totalTasks,
+                      completionRate,
+                    ),
                     const SizedBox(height: AppSizes.xl),
 
                     // Grid Categories Stats
@@ -155,7 +161,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         _buildStatCard(
                           context: context,
-                          title: 'Tất cả',
+                          title: 'Tác vụ',
                           icon: Icons.home_rounded,
                           color: AppColors.allTasks,
                           count: totalTasks,
@@ -211,15 +217,13 @@ class _DashboardPageState extends State<DashboardPage> {
                           final task = incompleteTasks[index];
                           return TaskTile(
                             task: task,
-                            onToggle: () => context
-                                .read<TaskProvider>()
-                                .toggleComplete(
+                            onToggle: () =>
+                                context.read<TaskProvider>().toggleComplete(
                                   taskId: task.id,
                                   isCompleted: !task.isCompleted,
                                 ),
-                            onToggleImportant: () => context
-                                .read<TaskProvider>()
-                                .toggleImportant(
+                            onToggleImportant: () =>
+                                context.read<TaskProvider>().toggleImportant(
                                   taskId: task.id,
                                   isImportant: !task.isImportant,
                                 ),
@@ -311,7 +315,11 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildProgressCard(
-      BuildContext context, int completed, int total, double rate) {
+    BuildContext context,
+    int completed,
+    int total,
+    double rate,
+  ) {
     final isDark = context.isDarkMode;
     final percent = (rate * 100).toInt();
 
@@ -322,7 +330,7 @@ class _DashboardPageState extends State<DashboardPage> {
           colors: isDark
               ? [
                   const Color(0xFF1E3C72).withValues(alpha: 0.8),
-                  const Color(0xFF2A5298).withValues(alpha: 0.8)
+                  const Color(0xFF2A5298).withValues(alpha: 0.8),
                 ]
               : [AppColors.primary, AppColors.primaryLight],
           begin: Alignment.topLeft,
@@ -365,8 +373,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 Text(
                   total > 0
                       ? (percent == 100
-                          ? 'Tuyệt vời! Bạn đã hoàn thành hết! 🎉'
-                          : 'Cố gắng lên nhé! 💪')
+                            ? 'Tuyệt vời! Bạn đã hoàn thành hết! 🎉'
+                            : 'Cố gắng lên nhé! 💪')
                       : 'Bắt đầu thêm tác vụ nào!',
                   style: const TextStyle(
                     fontSize: 12,
