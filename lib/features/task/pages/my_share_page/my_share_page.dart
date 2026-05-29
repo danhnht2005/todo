@@ -145,6 +145,16 @@ class _SharedListItem extends StatelessWidget {
 
   const _SharedListItem({required this.list});
 
+  String _ownerLabel() {
+    final name = list.ownerName?.trim();
+    if (name != null && name.isNotEmpty) return name;
+
+    final email = list.ownerEmail?.trim();
+    if (email != null && email.isNotEmpty) return email;
+
+    return 'Người dùng';
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
@@ -184,17 +194,34 @@ class _SharedListItem extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSizes.md),
                 Expanded(
-                  child: Text(
-                    list.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? AppColors.textPrimaryDark
-                          : AppColors.textPrimary,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        list.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? AppColors.textPrimaryDark
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Chia sẻ bởi ${_ownerLabel()}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Icon(

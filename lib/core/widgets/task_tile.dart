@@ -15,6 +15,7 @@ class TaskTile extends StatelessWidget {
 
   /// Tên của custom list mà task thuộc về. Nếu null → hiển thị "Tác vụ"
   final String? listName;
+  final String? creatorLabel;
 
   const TaskTile({
     super.key,
@@ -24,6 +25,7 @@ class TaskTile extends StatelessWidget {
     required this.onDelete,
     required this.onTap,
     this.listName,
+    this.creatorLabel,
   });
 
   String _formatDueDate(DateTime date) {
@@ -53,6 +55,15 @@ class TaskTile extends StatelessWidget {
     metaParts.add(
       _MetaItem(icon: Icons.home_rounded, label: listName ?? 'Tác vụ'),
     );
+
+    if (creatorLabel != null && creatorLabel!.trim().isNotEmpty) {
+      metaParts.add(
+        _MetaItem(
+          icon: Icons.person_outline_rounded,
+          label: 'Tạo bởi ${creatorLabel!.trim()}',
+        ),
+      );
+    }
 
     if (task.dueDate != null) {
       metaParts.add(
