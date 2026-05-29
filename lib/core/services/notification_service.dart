@@ -14,8 +14,8 @@ class NotificationService {
   bool _initialized = false;
 
   // ─── Channel Android ───
-  static const _channelId = 'todo_reminder_channel';
-  static const _channelName = 'Nhắc nhở tác vụ';
+  static const _channelId = 'to do';
+  static const _channelName = 'Nhắc nhở';
   static const _channelDesc = 'Thông báo nhắc nhở khi đến giờ làm việc';
 
   /// Khởi tạo plugin. Phải gọi trước khi dùng bất kỳ method nào.
@@ -54,19 +54,22 @@ class NotificationService {
       );
       await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(channel);
 
       // Xin quyền hiển thị thông báo (Android 13+)
       await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
 
       // Xin quyền lên lịch chính xác
       await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestExactAlarmsPermission();
     }
 
@@ -111,7 +114,7 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       id,
-      '⏰ Nhắc nhở tác vụ',
+      'Nhắc nhở',
       title,
       tzReminderAt,
       details,
