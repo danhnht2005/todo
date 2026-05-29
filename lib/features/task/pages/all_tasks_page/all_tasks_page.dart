@@ -21,7 +21,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TaskProvider>().loadTasks();
+      context.read<TaskProvider>().loadTasks(noList: true);
     });
   }
 
@@ -58,7 +58,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () => provider.loadTasks(),
+                            onPressed: () => provider.loadTasks(noList: true),
                             child: const Text('Thử lại'),
                           ),
                         ],
@@ -77,7 +77,7 @@ class _AllTasksPageState extends State<AllTasksPage> {
                     return const EmptyStateWidget(
                       icon: Icons.task_outlined,
                       title: 'Không có tác vụ nào',
-                      subtitle: 'Các tác vụ của bạn sẽ hiển thị ở đây.',
+                      subtitle: 'Các tác vụ chưa được xếp vào danh sách sẽ hiển thị ở đây.',
                       iconColor: AppColors.allTasks,
                     );
                   }

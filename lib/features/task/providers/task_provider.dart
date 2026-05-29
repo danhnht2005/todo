@@ -22,6 +22,7 @@ class TaskProvider extends ChangeNotifier {
   bool? _currentIsImportant;
   bool? _currentHasDueDate;
   String? _currentListId;
+  bool _currentNoList = false;
   bool _isLoadAll = false;
   String? _currentSearchQuery;
 
@@ -40,6 +41,7 @@ class TaskProvider extends ChangeNotifier {
     bool? isImportant,
     bool? hasDueDate,
     String? listId,
+    bool noList = false,
   }) async {
     _setLoading(true);
     _errorMessage = null;
@@ -48,6 +50,7 @@ class TaskProvider extends ChangeNotifier {
     _currentIsImportant = isImportant;
     _currentHasDueDate = hasDueDate;
     _currentListId = listId;
+    _currentNoList = noList;
     _isLoadAll = false;
     _currentSearchQuery = null;
 
@@ -57,6 +60,7 @@ class TaskProvider extends ChangeNotifier {
         isImportant: isImportant,
         hasDueDate: hasDueDate,
         listId: listId,
+        noList: noList,
       );
     } catch (e) {
       _errorMessage = 'Không thể tải danh sách: ${e.toString()}';
@@ -111,6 +115,7 @@ class TaskProvider extends ChangeNotifier {
           isImportant: _currentIsImportant,
           hasDueDate: _currentHasDueDate,
           listId: _currentListId,
+          noList: _currentNoList,
         );
       }
 

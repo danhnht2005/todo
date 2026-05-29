@@ -30,6 +30,7 @@ class TaskService {
     bool? isImportant,
     bool? hasDueDate,
     String? listId,
+    bool noList = false,
   }) async {
     var query = _client.from('tasks').select('*, steps(*)');
 
@@ -46,6 +47,9 @@ class TaskService {
     }
     if (listId != null) {
       query = query.eq('list_id', listId);
+    }
+    if (noList) {
+      query = query.isFilter('list_id', null);
     }
 
     final response = await query.order('created_at', ascending: false);
