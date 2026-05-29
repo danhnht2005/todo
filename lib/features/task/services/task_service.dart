@@ -13,15 +13,14 @@ class TaskService {
 
   /// Lấy tất cả tasks của user (kèm steps)
   Future<List<TaskModel>> getTasks() async {
-    final response = await _client
-        .from('tasks')
-        .select('*, steps(*)')
-        .eq('user_id', _userId)
-        .order('created_at', ascending: false);
+    var query = _client.from('tasks').select('*, steps(*)');
+    query = await _applyAccessibleTaskFilter(query);
+
+    final response = await query.order('created_at', ascending: false);
 
     final tasks = (response as List)
         .map((json) => TaskModel.fromJson(json as Map<String, dynamic>))
-      .toList();
+        .toList();
     return _attachCreators(tasks);
   }
 
@@ -35,10 +34,13 @@ class TaskService {
   }) async {
     var query = _client.from('tasks').select('*, steps(*)');
 
-    // Shared custom lists can contain tasks created by different members.
-    // For smart lists, keep the filter scoped to the signed-in user.
-    if (listId == null) {
+    if (listId != null) {
+      query = query.eq('list_id', listId);
+    } else if (noList) {
       query = query.eq('user_id', _userId);
+      query = query.isFilter('list_id', null);
+    } else {
+      query = await _applyAccessibleTaskFilter(query);
     }
 
     if (isMyDay == true) {
@@ -50,18 +52,11 @@ class TaskService {
     if (hasDueDate == true) {
       query = query.not('due_date', 'is', null);
     }
-    if (listId != null) {
-      query = query.eq('list_id', listId);
-    }
-    if (noList) {
-      query = query.isFilter('list_id', null);
-    }
-
     final response = await query.order('created_at', ascending: false);
 
     final tasks = (response as List)
         .map((json) => TaskModel.fromJson(json as Map<String, dynamic>))
-      .toList();
+        .toList();
     return _attachCreators(tasks);
   }
 
@@ -154,16 +149,16 @@ class TaskService {
 
   /// Tìm kiếm task theo tiêu đề
   Future<List<TaskModel>> searchTasks(String query) async {
-    final response = await _client
-        .from('tasks')
-        .select('*, steps(*)')
-        .eq('user_id', _userId)
+    var request = _client.from('tasks').select('*, steps(*)');
+    request = await _applyAccessibleTaskFilter(request);
+
+    final response = await request
         .ilike('title', '%$query%')
         .order('created_at', ascending: false);
 
     final tasks = (response as List)
         .map((json) => TaskModel.fromJson(json as Map<String, dynamic>))
-      .toList();
+        .toList();
     return _attachCreators(tasks);
   }
 
@@ -235,5 +230,43 @@ class TaskService {
     } on PostgrestException {
       return tasks;
     }
+  }
+
+  Future<PostgrestFilterBuilder<T>> _applyAccessibleTaskFilter<T>(
+    PostgrestFilterBuilder<T> query,
+  ) async {
+    final sharedListIds = await _getSharedListIds();
+    if (sharedListIds.isEmpty) {
+      return query.eq('user_id', _userId);
+    }
+
+    final sharedListFilter = sharedListIds.join(',');
+    return query.or('user_id.eq.$_userId,list_id.in.($sharedListFilter)');
+  }
+
+  Future<List<String>> _getSharedListIds() async {
+    try {
+      final response = await _client.rpc('get_shared_task_lists');
+      return (response as List)
+          .map((json) => (json as Map<String, dynamic>)['id'] as String)
+          .toSet()
+          .toList();
+    } on PostgrestException catch (e) {
+      final message = e.message.toLowerCase();
+      final isMissingRpc =
+          e.code == 'PGRST202' ||
+          message.contains('could not find the function');
+      if (!isMissingRpc) rethrow;
+    }
+
+    final memberResponse = await _client
+        .from('task_list_members')
+        .select('list_id')
+        .eq('user_id', _userId);
+
+    return (memberResponse as List)
+        .map((json) => (json as Map<String, dynamic>)['list_id'] as String)
+        .toSet()
+        .toList();
   }
 }

@@ -176,7 +176,7 @@ class TaskTile extends StatelessWidget {
                             ),
                           // ─── Metadata row ───
                           const SizedBox(height: 2),
-                          _MetaRow(parts: metaParts, isDark: isDark),
+                          _MetaWrapRow(parts: metaParts, isDark: isDark),
                         ],
                       ),
                     ),
@@ -248,5 +248,68 @@ class _MetaRow extends StatelessWidget {
     }
 
     return Row(children: widgets);
+  }
+}
+
+class _MetaWrapRow extends StatelessWidget {
+  final List<_MetaItem> parts;
+  final bool isDark;
+
+  const _MetaWrapRow({required this.parts, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    if (parts.isEmpty) return const SizedBox.shrink();
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 2,
+      children: parts
+          .map(
+            (item) => _MetaWrapChip(
+              item: item,
+              isDark: isDark,
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+}
+
+class _MetaWrapChip extends StatelessWidget {
+  final _MetaItem item;
+  final bool isDark;
+
+  const _MetaWrapChip({
+    required this.item,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isDark ? AppColors.textSecondaryDark : AppColors.textHint;
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 150),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(item.icon, size: 11, color: color),
+          const SizedBox(width: 3),
+          Flexible(
+            child: Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
