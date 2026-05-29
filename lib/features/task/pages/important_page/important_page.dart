@@ -4,6 +4,7 @@ import '../../widgets/task_list.dart';
 import '../../../../core/widgets/add_task_bar.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../providers/task_provider.dart';
+import '../../../task_list/providers/task_list_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/extensions.dart';
@@ -93,16 +94,22 @@ class _ImportantPageState extends State<ImportantPage> {
         Positioned(
           right: 20,
           bottom: 50,
-          child: AddTaskBar(
-            onSubmit: (title, dueDate, reminderAt, _) {
-              context.read<TaskProvider>().addTask(
+          child: Consumer<TaskListProvider>(
+            builder: (context, listProvider, _) {
+              return AddTaskBar(
+                onSubmit: (title, dueDate, reminderAt, listId) {
+                  context.read<TaskProvider>().addTask(
                     title: title,
                     isImportant: true,
                     dueDate: dueDate,
                     reminderAt: reminderAt,
+                    listId: listId,
                   );
+                },
+                accentColor: AppColors.important,
+                lists: listProvider.lists,
+              );
             },
-            accentColor: AppColors.important,
           ),
         ),
       ],

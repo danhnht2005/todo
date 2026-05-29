@@ -110,16 +110,22 @@ class _CustomListPageState extends State<CustomListPage> {
         Positioned(
           right: 20,
           bottom: 50,
-          child: AddTaskBar(
-            onSubmit: (title, dueDate, reminderAt, _) {
-              context.read<TaskProvider>().addTask(
-                title: title,
-                listId: widget.id,
-                dueDate: dueDate,
-                reminderAt: reminderAt,
+          child: Consumer<TaskListProvider>(
+            builder: (context, listProvider, _) {
+              return AddTaskBar(
+                onSubmit: (title, dueDate, reminderAt, listId) {
+                  context.read<TaskProvider>().addTask(
+                    title: title,
+                    listId: listId,
+                    dueDate: dueDate,
+                    reminderAt: reminderAt,
+                  );
+                },
+                accentColor: AppColors.customList,
+                lists: listProvider.lists,
+                initialListId: widget.id,
               );
             },
-            accentColor: AppColors.customList,
           ),
         ),
       ],

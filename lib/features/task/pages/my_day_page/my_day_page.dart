@@ -4,6 +4,7 @@ import '../../../../core/widgets/add_task_bar.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../widgets/task_list.dart';
 import '../../providers/task_provider.dart';
+import '../../../task_list/providers/task_list_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/utils/date_formatter.dart';
@@ -94,16 +95,22 @@ class _MyDayPageState extends State<MyDayPage> {
         Positioned(
           right: 20,
           bottom: 50,
-          child: AddTaskBar(
-            onSubmit: (title, dueDate, reminderAt, _) {
-              context.read<TaskProvider>().addTask(
+          child: Consumer<TaskListProvider>(
+            builder: (context, listProvider, _) {
+              return AddTaskBar(
+                onSubmit: (title, dueDate, reminderAt, listId) {
+                  context.read<TaskProvider>().addTask(
                     title: title,
                     isMyDay: true,
                     dueDate: dueDate,
                     reminderAt: reminderAt,
+                    listId: listId,
                   );
+                },
+                accentColor: AppColors.myDay,
+                lists: listProvider.lists,
+              );
             },
-            accentColor: AppColors.myDay,
           ),
         ),
       ],

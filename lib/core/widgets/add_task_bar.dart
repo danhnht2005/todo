@@ -17,6 +17,7 @@ class AddTaskBar extends StatefulWidget {
   final DateTime? initialDueDate;
 
   final List<TaskListModel>? lists;
+  final String? initialListId;
 
   const AddTaskBar({
     super.key,
@@ -24,6 +25,7 @@ class AddTaskBar extends StatefulWidget {
     this.accentColor = AppColors.primary,
     this.initialDueDate,
     this.lists,
+    this.initialListId,
   });
 
   @override
@@ -79,6 +81,11 @@ class _AddTaskBarState extends State<AddTaskBar> {
     DateTime? selectedDate = widget.initialDueDate;
     DateTime? selectedReminder;
     TaskListModel? selectedList;
+    if (widget.initialListId != null && widget.lists != null) {
+      try {
+        selectedList = widget.lists!.firstWhere((l) => l.id == widget.initialListId);
+      } catch (_) {}
+    }
 
     showModalBottomSheet(
       context: context,
