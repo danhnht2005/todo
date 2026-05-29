@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../features/task/models/task_model.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_sizes.dart';
@@ -12,6 +13,9 @@ class TaskTile extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onTap;
 
+  /// Tên của custom list mà task thuộc về. Nếu null → hiển thị "Tác vụ"
+  final String? listName;
+
   const TaskTile({
     super.key,
     required this.task,
@@ -19,11 +23,45 @@ class TaskTile extends StatelessWidget {
     required this.onToggleImportant,
     required this.onDelete,
     required this.onTap,
+    this.listName,
   });
+
+  String _formatDueDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final dateOnly = DateTime(date.year, date.month, date.day);
+
+    if (dateOnly == today) return 'Hôm nay';
+    if (dateOnly == tomorrow) return 'Ngày mai';
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+
+    // ─── Build metadata chips ───
+    final metaParts = <_MetaItem>[];
+
+    if (task.isMyDay) {
+      metaParts.add(
+        _MetaItem(icon: Icons.wb_sunny_rounded, label: 'Ngày của tôi'),
+      );
+    }
+
+    metaParts.add(
+      _MetaItem(icon: Icons.home_rounded, label: listName ?? 'Tác vụ'),
+    );
+
+    if (task.dueDate != null) {
+      metaParts.add(
+        _MetaItem(
+          icon: Icons.calendar_today_outlined,
+          label: _formatDueDate(task.dueDate!),
+        ),
+      );
+    }
 
     return Dismissible(
       key: Key(task.id),
@@ -125,6 +163,9 @@ class TaskTile extends StatelessWidget {
                                 color: AppColors.textHint,
                               ),
                             ),
+                          // ─── Metadata row ───
+                          const SizedBox(height: 2),
+                          _MetaRow(parts: metaParts, isDark: isDark),
                         ],
                       ),
                     ),
@@ -146,5 +187,55 @@ class TaskTile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// ─── Internal helper types ───
+
+class _MetaItem {
+  final IconData icon;
+  final String label;
+
+  const _MetaItem({required this.icon, required this.label});
+}
+
+class _MetaRow extends StatelessWidget {
+  final List<_MetaItem> parts;
+  final bool isDark;
+
+  const _MetaRow({required this.parts, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    if (parts.isEmpty) return const SizedBox.shrink();
+
+    final separator = Text(
+      ' • ',
+      style: TextStyle(
+        fontSize: 11,
+        color: isDark ? AppColors.textSecondaryDark : AppColors.textHint,
+      ),
+    );
+
+    final widgets = <Widget>[];
+    for (int i = 0; i < parts.length; i++) {
+      final item = parts[i];
+      widgets.add(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(item.icon, size: 11),
+            const SizedBox(width: 3),
+            Text(
+              item.label,
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+      );
+      if (i < parts.length - 1) widgets.add(separator);
+    }
+
+    return Row(children: widgets);
   }
 }

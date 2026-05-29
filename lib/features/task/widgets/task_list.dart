@@ -6,6 +6,7 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/extensions.dart';
 import '../models/task_model.dart';
 import '../providers/task_provider.dart';
+import '../../task_list/providers/task_list_provider.dart';
 import '../../../../core/widgets/task_tile.dart';
 
 class TaskList extends StatefulWidget {
@@ -25,6 +26,19 @@ class TaskList extends StatefulWidget {
 class TaskListState extends State<TaskList> {
   bool _showCompleted = false;
 
+  String? _listName(BuildContext context, String? listId) {
+    if (listId == null) return null;
+    try {
+      return context
+          .read<TaskListProvider>()
+          .lists
+          .firstWhere((l) => l.id == listId)
+          .title;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
@@ -34,6 +48,7 @@ class TaskListState extends State<TaskList> {
         ...widget.incomplete.map(
           (task) => TaskTile(
             task: task,
+            listName: _listName(context, task.listId),
             onToggle: () => context.read<TaskProvider>().toggleComplete(
               taskId: task.id,
               isCompleted: !task.isCompleted,
@@ -86,6 +101,7 @@ class TaskListState extends State<TaskList> {
             ...widget.completed.map(
               (task) => TaskTile(
                 task: task,
+                listName: _listName(context, task.listId),
                 onToggle: () => context.read<TaskProvider>().toggleComplete(
                   taskId: task.id,
                   isCompleted: !task.isCompleted,
@@ -106,3 +122,5 @@ class TaskListState extends State<TaskList> {
     );
   }
 }
+
+
