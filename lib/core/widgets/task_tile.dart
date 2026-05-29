@@ -3,6 +3,7 @@ import '../../features/task/models/task_model.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_sizes.dart';
 import '../utils/extensions.dart';
+import 'confirm_delete_dialog.dart';
 
 class TaskTile extends StatelessWidget {
   final TaskModel task;
@@ -33,6 +34,19 @@ class TaskTile extends StatelessWidget {
         color: AppColors.error,
         child: const Icon(Icons.delete, color: Colors.white),
       ),
+      // Hiện dialog xác nhận trước khi xóa;
+      // trả về true → xóa, false → tile snap back
+      confirmDismiss: (_) async {
+        bool confirmed = false;
+        await showConfirmDeleteDialog(
+          context: context,
+          title: 'Xóa tác vụ?',
+          content:
+              '"${task.title}" sẽ bị xóa vĩnh viễn. Bạn không thể hoàn tác hành động này.',
+          onConfirmed: () => confirmed = true,
+        );
+        return confirmed;
+      },
       onDismissed: (_) => onDelete(),
       child: Padding(
         padding: const EdgeInsets.symmetric(
