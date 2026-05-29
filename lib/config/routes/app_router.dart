@@ -12,6 +12,7 @@ import '../../features/task/pages/important_page/important_page.dart';
 import '../../features/auth/pages/register_page.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/task/pages/my_day_page/my_day_page.dart';
+import '../../features/task/pages/my_share_page/my_share_page.dart';
 import '../../features/task/pages/dashboard_page/dashboard_page.dart';
 import '../../features/task/widgets/main_layout.dart';
 
@@ -59,6 +60,10 @@ class AppRouter {
           GoRoute(
             path: '/all-tasks',
             builder: (context, state) => const AllTasksPage(),
+          ),
+          GoRoute(
+            path: '/my-share',
+            builder: (context, state) => const MySharePage(),
           ),
           GoRoute(
             path: '/custom-list/:id',

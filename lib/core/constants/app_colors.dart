@@ -15,6 +15,7 @@ class AppColors {
   static const Color myDay = Color(0xFFF59E0B); // Amber
   static const Color important = Color(0xFFEF4444); // Rose
   static const Color planned = Color(0xFF10B981); // Emerald
+  static const Color myShare = Color(0xFF0A6F4D); // Emerald
   static const Color allTasks = Color(0xFF64748B); // Slate 500
   static const Color customList = Color(0xFF3B82F6); // Blue
 
