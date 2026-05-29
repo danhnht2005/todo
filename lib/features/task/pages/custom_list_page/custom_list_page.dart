@@ -1,4 +1,6 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../task_list/providers/task_list_provider.dart';
 import '../../../../core/widgets/add_task_bar.dart';
@@ -47,7 +49,7 @@ class _CustomListPageState extends State<CustomListPage> {
         Column(
           children: [
             // ─── Header ───
-            _CustomListHeader(),
+            _CustomListHeader(listId: widget.id),
 
             // ─── Task List ───
             Expanded(
@@ -110,11 +112,11 @@ class _CustomListPageState extends State<CustomListPage> {
           child: AddTaskBar(
             onSubmit: (title, dueDate, reminderAt) {
               context.read<TaskProvider>().addTask(
-                    title: title,
-                    listId: widget.id,
-                    dueDate: dueDate,
-                    reminderAt: reminderAt,
-                  );
+                title: title,
+                listId: widget.id,
+                dueDate: dueDate,
+                reminderAt: reminderAt,
+              );
             },
             accentColor: AppColors.customList,
           ),
@@ -124,18 +126,173 @@ class _CustomListPageState extends State<CustomListPage> {
   }
 }
 
+// ─── Enum cho menu options ───
+enum _ListMenuAction { rename, delete }
+
 class _CustomListHeader extends StatelessWidget {
+  final String listId;
+
+  const _CustomListHeader({required this.listId});
+
+  /// Hiển thị dialog đổi tên danh sách
+  Future<void> _showRenameDialog(
+    BuildContext context,
+    String currentTitle,
+  ) async {
+    final controller = TextEditingController(text: currentTitle);
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        final isDark = dialogCtx.isDarkMode;
+
+        return AlertDialog(
+          backgroundColor: isDark
+              ? AppColors.surfaceDark
+              : AppColors.surfaceLight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: Text(
+            'Đổi tên danh sách',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+            ),
+          ),
+          content: SizedBox(
+            width: AppSizes.dialogWidth(context),
+            child: TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Nhập tiêu đề danh sách',
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(
+                'Hủy bỏ',
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.textPrimaryDark
+                      : AppColors.textPrimary,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final newTitle = controller.text.trim();
+                if (newTitle.isEmpty) {
+                  BotToast.showText(
+                    text: 'Tiêu đề danh sách không được để trống',
+                    align: const Alignment(0, 0.8),
+                  );
+                  return;
+                }
+                Navigator.pop(dialogCtx, newTitle);
+              },
+              child: const Text(
+                'Lưu',
+                style: TextStyle(color: AppColors.primary),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((newTitle) async {
+      if (newTitle != null && newTitle is String && context.mounted) {
+        await context.read<TaskListProvider>().updateTaskList(
+          listId: listId,
+          title: newTitle,
+        );
+        // Reload detail để cập nhật tiêu đề trên header
+        if (context.mounted) {
+          context.read<TaskListProvider>().loadTaskListDetail(listId);
+        }
+      }
+    });
+  }
+
+  /// Hiển thị dialog xác nhận xóa danh sách
+  Future<void> _showDeleteDialog(BuildContext context, String listTitle) async {
+    showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) {
+        final isDark = dialogCtx.isDarkMode;
+
+        return AlertDialog(
+          backgroundColor: isDark
+              ? AppColors.surfaceDark
+              : AppColors.surfaceLight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: Text(
+            'Xóa danh sách?',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+            ),
+          ),
+          content: Text(
+            'Danh sách "$listTitle" và tất cả tác vụ trong đó sẽ bị xóa vĩnh viễn. Bạn không thể hoàn tác hành động này.',
+            style: TextStyle(
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondary,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx, false),
+              child: Text(
+                'Hủy bỏ',
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.textPrimaryDark
+                      : AppColors.textPrimary,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx, true),
+              child: const Text(
+                'Xóa',
+                style: TextStyle(color: AppColors.error),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((confirmed) async {
+      if (confirmed == true && context.mounted) {
+        await context.read<TaskListProvider>().deleteTaskList(listId);
+        if (context.mounted) {
+          context.go('/');
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     return Consumer<TaskListProvider>(
       builder: (context, provider, child) {
+        final listTitle =
+            provider.selectedTaskList?.title ?? 'Danh sách tùy chỉnh';
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(
             AppSizes.xxl,
             AppSizes.lg,
-            AppSizes.xxl,
+            AppSizes.md, // giảm padding phải để nút menu không bị cắt
             AppSizes.md,
           ),
           decoration: BoxDecoration(
@@ -152,13 +309,13 @@ class _CustomListHeader extends StatelessWidget {
             children: [
               const Icon(
                 Icons.list_rounded,
-                color: AppColors.primary,
+                color: AppColors.customList,
                 size: 28,
               ),
               const SizedBox(width: AppSizes.md),
               Expanded(
                 child: Text(
-                  provider.selectedTaskList?.title ?? 'Danh sách tùy chỉnh',
+                  listTitle,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
@@ -167,6 +324,54 @@ class _CustomListHeader extends StatelessWidget {
                         : AppColors.textPrimary,
                   ),
                 ),
+              ),
+
+              // ─── More options menu ───
+              PopupMenuButton<_ListMenuAction>(
+                icon: Icon(
+                  Icons.more_vert_rounded,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondary,
+                ),
+                tooltip: 'Tùy chọn',
+                onSelected: (action) {
+                  switch (action) {
+                    case _ListMenuAction.rename:
+                      _showRenameDialog(context, listTitle);
+                    case _ListMenuAction.delete:
+                      _showDeleteDialog(context, listTitle);
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: _ListMenuAction.rename,
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_rounded, size: 20),
+                        SizedBox(width: 12),
+                        Text('Đổi tên'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: _ListMenuAction.delete,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete_outline_rounded,
+                          size: 20,
+                          color: AppColors.error,
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          'Xóa danh sách',
+                          style: TextStyle(color: AppColors.error),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
