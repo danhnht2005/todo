@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../task_list/providers/task_list_provider.dart';
 import '../../../../core/widgets/add_task_bar.dart';
+import '../../../../core/widgets/confirm_delete_dialog.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../widgets/task_list.dart';
 import '../../providers/task_provider.dart';
@@ -219,64 +220,18 @@ class _CustomListHeader extends StatelessWidget {
 
   /// Hiển thị dialog xác nhận xóa danh sách
   Future<void> _showDeleteDialog(BuildContext context, String listTitle) async {
-    showDialog<bool>(
+    await showConfirmDeleteDialog(
       context: context,
-      builder: (dialogCtx) {
-        final isDark = dialogCtx.isDarkMode;
-
-        return AlertDialog(
-          backgroundColor: isDark
-              ? AppColors.surfaceDark
-              : AppColors.surfaceLight,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          ),
-          title: Text(
-            'Xóa danh sách?',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
-            ),
-          ),
-          content: Text(
-            'Danh sách "$listTitle" và tất cả tác vụ trong đó sẽ bị xóa vĩnh viễn. Bạn không thể hoàn tác hành động này.',
-            style: TextStyle(
-              color: isDark
-                  ? AppColors.textSecondaryDark
-                  : AppColors.textSecondary,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogCtx, false),
-              child: Text(
-                'Hủy bỏ',
-                style: TextStyle(
-                  color: isDark
-                      ? AppColors.textPrimaryDark
-                      : AppColors.textPrimary,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogCtx, true),
-              child: const Text(
-                'Xóa',
-                style: TextStyle(color: AppColors.error),
-              ),
-            ),
-          ],
-        );
-      },
-    ).then((confirmed) async {
-      if (confirmed == true && context.mounted) {
+      title: 'Xóa danh sách?',
+      content:
+          'Danh sách "$listTitle" và tất cả tác vụ trong đó sẽ bị xóa vĩnh viễn. Bạn không thể hoàn tác hành động này.',
+      onConfirmed: () async {
         await context.read<TaskListProvider>().deleteTaskList(listId);
         if (context.mounted) {
           context.go('/');
         }
-      }
-    });
+      },
+    );
   }
 
   @override

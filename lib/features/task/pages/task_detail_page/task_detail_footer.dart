@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/confirm_delete_dialog.dart';
 import '../../models/task_model.dart';
 import '../../providers/task_provider.dart';
 
@@ -27,8 +28,16 @@ class TaskDetailFooter extends StatelessWidget {
         ),
         IconButton(
           onPressed: () {
-            context.read<TaskProvider>().deleteTask(task.id);
-            context.pop();
+            showConfirmDeleteDialog(
+              context: context,
+              title: 'Xóa tác vụ?',
+              content:
+                  '"${task.title}" sẽ bị xóa vĩnh viễn. Bạn không thể hoàn tác hành động này.',
+              onConfirmed: () {
+                context.read<TaskProvider>().deleteTask(task.id);
+                context.pop();
+              },
+            );
           },
           icon: const Icon(Icons.delete_outline_rounded, size: 22),
         ),
