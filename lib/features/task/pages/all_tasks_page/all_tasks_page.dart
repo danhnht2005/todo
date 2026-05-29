@@ -78,7 +78,8 @@ class _AllTasksPageState extends State<AllTasksPage> {
                     return const EmptyStateWidget(
                       icon: Icons.task_outlined,
                       title: 'Không có tác vụ nào',
-                      subtitle: 'Các tác vụ chưa được xếp vào danh sách sẽ hiển thị ở đây.',
+                      subtitle:
+                          'Các tác vụ chưa được xếp vào danh sách sẽ hiển thị ở đây.',
                       iconColor: AppColors.allTasks,
                     );
                   }
@@ -144,7 +145,7 @@ class _AllTasksHeader extends StatelessWidget {
           const Icon(Icons.home_rounded, color: AppColors.allTasks, size: 28),
           const SizedBox(width: AppSizes.md),
           Text(
-            'All Tasks',
+            'Tác vụ',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
