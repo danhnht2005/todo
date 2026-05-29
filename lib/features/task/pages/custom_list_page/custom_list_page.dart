@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -139,53 +140,81 @@ class _CustomListHeader extends StatelessWidget {
     String currentTitle,
   ) async {
     final controller = TextEditingController(text: currentTitle);
-    final formKey = GlobalKey<FormState>();
 
-    final newTitle = await showDialog<String>(
+    showDialog(
       context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: const Text('Đổi tên danh sách'),
-        content: Form(
-          key: formKey,
-          child: TextFormField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Tên danh sách',
-              border: OutlineInputBorder(),
-            ),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? 'Tên không được để trống'
-                : null,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Hủy'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(dialogCtx).pop(controller.text.trim());
-              }
-            },
-            child: const Text('Lưu'),
-          ),
-        ],
-      ),
-    );
+      builder: (dialogCtx) {
+        final isDark = dialogCtx.isDarkMode;
 
-    if (newTitle != null && newTitle.isNotEmpty && context.mounted) {
-      await context.read<TaskListProvider>().updateTaskList(
-        listId: listId,
-        title: newTitle,
-      );
-      // Reload detail để cập nhật tiêu đề trên header
-      if (context.mounted) {
-        context.read<TaskListProvider>().loadTaskListDetail(listId);
+        return AlertDialog(
+          backgroundColor: isDark
+              ? AppColors.surfaceDark
+              : AppColors.surfaceLight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: Text(
+            'Đổi tên danh sách',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+            ),
+          ),
+          content: SizedBox(
+            width: AppSizes.dialogWidth(context),
+            child: TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Nhập tiêu đề danh sách',
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogCtx),
+              child: Text(
+                'Hủy bỏ',
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.textPrimaryDark
+                      : AppColors.textPrimary,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final newTitle = controller.text.trim();
+                if (newTitle.isEmpty) {
+                  BotToast.showText(
+                    text: 'Tiêu đề danh sách không được để trống',
+                    align: const Alignment(0, 0.8),
+                  );
+                  return;
+                }
+                Navigator.pop(dialogCtx, newTitle);
+              },
+              child: const Text(
+                'Lưu',
+                style: TextStyle(color: AppColors.primary),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((newTitle) async {
+      if (newTitle != null && newTitle is String && context.mounted) {
+        await context.read<TaskListProvider>().updateTaskList(
+          listId: listId,
+          title: newTitle,
+        );
+        // Reload detail để cập nhật tiêu đề trên header
+        if (context.mounted) {
+          context.read<TaskListProvider>().loadTaskListDetail(listId);
+        }
       }
-    }
+    });
   }
 
   /// Hiển thị dialog xác nhận xóa danh sách
