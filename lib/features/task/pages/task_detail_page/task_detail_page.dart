@@ -5,6 +5,7 @@ import 'task_detail_footer.dart';
 import 'build_app_step_input.dart';
 import 'build_step_list.dart';
 import 'toggle_due_date.dart';
+import 'toggle_reminder.dart';
 import 'build_note_section.dart';
 import 'build_title_task_detail.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -78,6 +79,8 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                         ToggleMyDay(task: task),
                         const Divider(height: 1, indent: 56, endIndent: 16),
                         ToggleDueDate(task: task),
+                        const Divider(height: 1, indent: 56, endIndent: 16),
+                        ToggleReminder(task: task),
                       ],
                     ),
 

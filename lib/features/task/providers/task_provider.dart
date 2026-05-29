@@ -206,9 +206,11 @@ class TaskProvider extends ChangeNotifier {
     bool? isMyDay,
     String? listId,
     String? dueDate,
+    String? reminderAt,
     bool clearDueDate = false,
     bool clearListId = false,
     bool clearNote = false,
+    bool clearReminderAt = false,
   }) async {
     try {
       await _taskService.updateTask(
@@ -220,9 +222,11 @@ class TaskProvider extends ChangeNotifier {
         isMyDay: isMyDay,
         listId: listId,
         dueDate: dueDate,
+        reminderAt: reminderAt,
         clearDueDate: clearDueDate,
         clearListId: clearListId,
         clearNote: clearNote,
+        clearReminderAt: clearReminderAt,
       );
       await _reload();
     } catch (e) {

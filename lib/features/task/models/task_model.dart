@@ -135,6 +135,7 @@ class TaskModel {
     bool clearDueDate = false,
     bool clearListId = false,
     bool clearNote = false,
+    bool clearReminderAt = false,
   }) {
     final map = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
@@ -155,6 +156,7 @@ class TaskModel {
     if (dueDate != null) map['due_date'] = dueDate;
     if (clearDueDate) map['due_date'] = null;
     if (reminderAt != null) map['reminder_at'] = reminderAt;
+    if (clearReminderAt) map['reminder_at'] = null;
     if (completedAt != null) map['completed_at'] = completedAt;
     return map;
   }

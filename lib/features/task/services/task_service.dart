@@ -105,9 +105,11 @@ class TaskService {
     bool? isMyDay,
     String? listId,
     String? dueDate,
+    String? reminderAt,
     bool clearDueDate = false,
     bool clearListId = false,
     bool clearNote = false,
+    bool clearReminderAt = false,
   }) async {
     final response = await _client
         .from('tasks')
@@ -120,9 +122,11 @@ class TaskService {
             isMyDay: isMyDay,
             listId: listId,
             dueDate: dueDate,
+            reminderAt: reminderAt,
             clearDueDate: clearDueDate,
             clearListId: clearListId,
             clearNote: clearNote,
+            clearReminderAt: clearReminderAt,
           ),
         )
         .eq('id', taskId)
