@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 import '../services/task_service.dart';
+import '../../../core/services/notification_service.dart';
 
 class TaskProvider extends ChangeNotifier {
   final TaskService _taskService;
+  final NotificationService _notificationService;
 
-  TaskProvider({required TaskService taskService}) : _taskService = taskService;
+  TaskProvider({
+    required TaskService taskService,
+    required NotificationService notificationService,
+  })  : _taskService = taskService,
+        _notificationService = notificationService;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -152,6 +158,18 @@ class TaskProvider extends ChangeNotifier {
         reminderAt: reminderAt,
       );
       await _reload();
+
+      // Lên lịch thông báo nếu có reminderAt
+      if (reminderAt != null) {
+        final newTask = _tasks.isNotEmpty ? _tasks.first : null;
+        if (newTask != null && newTask.reminderAt != null) {
+          await _notificationService.scheduleReminder(
+            taskId: newTask.id,
+            title: newTask.title,
+            reminderAt: newTask.reminderAt!,
+          );
+        }
+      }
     } catch (e) {
       _setError('Không thể thêm task: ${e.toString()}');
     }
@@ -159,6 +177,7 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> deleteTask(String taskId) async {
     try {
+      await _notificationService.cancelReminder(taskId);
       await _taskService.deleteTask(taskId);
       await _reload();
     } catch (e) {
@@ -173,6 +192,20 @@ class TaskProvider extends ChangeNotifier {
     try {
       await _taskService.updateTask(taskId: taskId, isCompleted: isCompleted);
       await _reload();
+      // Huỷ reminder nếu hoàn thành; lên lịch lại nếu bỏ hoàn thành
+      if (isCompleted) {
+        await _notificationService.cancelReminder(taskId);
+      } else {
+        final updatedTask = _task?.id == taskId ? _task : null;
+        if (updatedTask?.reminderAt != null &&
+            updatedTask!.reminderAt!.isAfter(DateTime.now())) {
+          await _notificationService.scheduleReminder(
+            taskId: taskId,
+            title: updatedTask.title,
+            reminderAt: updatedTask.reminderAt!,
+          );
+        }
+      }
     } catch (e) {
       _setError('Lỗi: ${e.toString()}');
     }
@@ -234,6 +267,24 @@ class TaskProvider extends ChangeNotifier {
         clearReminderAt: clearReminderAt,
       );
       await _reload();
+
+      // Cập nhật lịch reminder
+      if (clearReminderAt) {
+        // Người dùng xoá reminder
+        await _notificationService.cancelReminder(taskId);
+      } else if (reminderAt != null) {
+        // Người dùng đặt/đổi reminder mới
+        final parsed = DateTime.tryParse(reminderAt);
+        if (parsed != null && parsed.isAfter(DateTime.now())) {
+          final taskTitle = title ?? _task?.title ?? 'Tác vụ';
+          await _notificationService.cancelReminder(taskId);
+          await _notificationService.scheduleReminder(
+            taskId: taskId,
+            title: taskTitle,
+            reminderAt: parsed,
+          );
+        }
+      }
     } catch (e) {
       _setError('Không thể cập nhật: ${e.toString()}');
     }
