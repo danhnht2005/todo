@@ -111,7 +111,7 @@ class _CustomListPageState extends State<CustomListPage> {
           right: 20,
           bottom: 50,
           child: AddTaskBar(
-            onSubmit: (title, dueDate, reminderAt) {
+            onSubmit: (title, dueDate, reminderAt, _) {
               context.read<TaskProvider>().addTask(
                 title: title,
                 listId: widget.id,

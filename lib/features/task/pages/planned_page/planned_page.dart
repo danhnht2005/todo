@@ -93,7 +93,7 @@ class _PlannedPageState extends State<PlannedPage> {
           right: 20,
           bottom: 50,
           child: AddTaskBar(
-            onSubmit: (title, dueDate, reminderAt) {
+            onSubmit: (title, dueDate, reminderAt, _) {
               context.read<TaskProvider>().addTask(
                     title: title,
                     dueDate: dueDate,

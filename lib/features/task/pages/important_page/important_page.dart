@@ -94,7 +94,7 @@ class _ImportantPageState extends State<ImportantPage> {
           right: 20,
           bottom: 50,
           child: AddTaskBar(
-            onSubmit: (title, dueDate, reminderAt) {
+            onSubmit: (title, dueDate, reminderAt, _) {
               context.read<TaskProvider>().addTask(
                     title: title,
                     isImportant: true,
