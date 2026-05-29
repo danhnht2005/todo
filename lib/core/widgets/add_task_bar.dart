@@ -76,6 +76,68 @@ class _AddTaskBarState extends State<AddTaskBar> {
     return '${DateFormat('dd/MM/yyyy').format(dateTime)}, $timeStr';
   }
 
+  Widget _buildHorizontalChip({
+    required VoidCallback onTap,
+    required IconData icon,
+    required String label,
+    required bool isActive,
+    required Color activeColor,
+    required bool isDark,
+    VoidCallback? onClear,
+  }) {
+    final baseColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
+    final displayColor = isActive ? activeColor : baseColor;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: isActive
+                ? activeColor.withValues(alpha: 0.1)
+                : (isDark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.03)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: displayColor, size: 18),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: displayColor,
+                  fontWeight: isActive ? FontWeight.w500 : FontWeight.w400,
+                ),
+              ),
+              if (isActive && onClear != null) ...[
+                const SizedBox(width: 6),
+                GestureDetector(
+                  onTap: () {
+                    onClear();
+                  },
+                  child: Icon(
+                    Icons.close_rounded,
+                    color: displayColor.withValues(alpha: 0.6),
+                    size: 14,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showAddTaskBar(BuildContext context) {
     final isDark = context.isDarkMode;
     DateTime? selectedDate = widget.initialDueDate;
@@ -83,7 +145,9 @@ class _AddTaskBarState extends State<AddTaskBar> {
     TaskListModel? selectedList;
     if (widget.initialListId != null && widget.lists != null) {
       try {
-        selectedList = widget.lists!.firstWhere((l) => l.id == widget.initialListId);
+        selectedList = widget.lists!.firstWhere(
+          (l) => l.id == widget.initialListId,
+        );
       } catch (_) {}
     }
 
@@ -275,25 +339,10 @@ class _AddTaskBarState extends State<AddTaskBar> {
           }
 
           final isDateActive = selectedDate != null;
-          final dateColor = isDateActive
-              ? widget.accentColor
-              : (isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondary);
 
           final isReminderActive = selectedReminder != null;
-          final reminderColor = isReminderActive
-              ? widget.accentColor
-              : (isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondary);
 
           final isListActive = selectedList != null;
-          final listColor = isListActive
-              ? widget.accentColor
-              : (isDark
-                    ? AppColors.textSecondaryDark
-                    : AppColors.textSecondary);
 
           final hasLists = widget.lists != null && widget.lists!.isNotEmpty;
 
@@ -363,139 +412,56 @@ class _AddTaskBarState extends State<AddTaskBar> {
                     ],
                   ),
 
-                  // ─── List picker row (chỉ hiện khi có lists) ───
-                  if (hasLists)
-                    InkWell(
-                      onTap: pickList,
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 2,
-                          vertical: AppSizes.sm,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.home_rounded,
-                              color: listColor,
-                              size: 20,
-                            ),
-                            const SizedBox(width: AppSizes.sm),
-                            Expanded(
-                              child: Text(
-                                isListActive ? selectedList!.title : 'Tác vụ',
-                                style: TextStyle(
-                                  fontSize: 13.5,
-                                  color: listColor,
-                                  fontWeight: isListActive
-                                      ? FontWeight.w500
-                                      : FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                            if (isListActive)
-                              GestureDetector(
-                                onTap: clearList,
-                                child: Icon(
-                                  Icons.close_rounded,
-                                  color: listColor.withValues(alpha: 0.5),
-                                  size: 16,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                  // ─── Due date row ───
-                  InkWell(
-                    onTap: pickDate,
-                    borderRadius: BorderRadius.circular(8),
+                  const SizedBox(height: AppSizes.sm),
+                  // ─── Horizontal buttons row ───
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 2,
-                        vertical: AppSizes.sm,
-                      ),
+                      padding: const EdgeInsets.only(bottom: AppSizes.xs),
                       child: Row(
                         children: [
-                          Icon(
-                            isDateActive
+                          if (hasLists) ...[
+                            _buildHorizontalChip(
+                              onTap: pickList,
+                              icon: Icons.home_rounded,
+                              label: isListActive
+                                  ? selectedList!.title
+                                  : 'Tác vụ',
+                              isActive: isListActive,
+                              activeColor: widget.accentColor,
+                              isDark: isDark,
+                              onClear: isListActive ? clearList : null,
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                          _buildHorizontalChip(
+                            onTap: pickDate,
+                            icon: isDateActive
                                 ? Icons.calendar_today
                                 : Icons.calendar_today_outlined,
-                            color: dateColor,
-                            size: 20,
+                            label: isDateActive
+                                ? 'Đến hạn ${_formatDueDate(selectedDate!)}'
+                                : 'Đặt ngày đến hạn',
+                            isActive: isDateActive,
+                            activeColor: widget.accentColor,
+                            isDark: isDark,
+                            onClear: isDateActive ? clearDate : null,
                           ),
-                          const SizedBox(width: AppSizes.sm),
-                          Expanded(
-                            child: Text(
-                              isDateActive
-                                  ? 'Đến hạn ${_formatDueDate(selectedDate!)}'
-                                  : 'Đặt ngày đến hạn',
-                              style: TextStyle(
-                                fontSize: 13.5,
-                                color: dateColor,
-                                fontWeight: isDateActive
-                                    ? FontWeight.w500
-                                    : FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                          if (isDateActive)
-                            GestureDetector(
-                              onTap: clearDate,
-                              child: Icon(
-                                Icons.close_rounded,
-                                color: dateColor.withValues(alpha: 0.5),
-                                size: 16,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // ─── Reminder row ───
-                  InkWell(
-                    onTap: pickReminder,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 2,
-                        vertical: AppSizes.sm,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            isReminderActive
+                          const SizedBox(width: 8),
+                          _buildHorizontalChip(
+                            onTap: pickReminder,
+                            icon: isReminderActive
                                 ? Icons.notifications_active
                                 : Icons.notifications_none_outlined,
-                            color: reminderColor,
-                            size: 20,
+                            label: isReminderActive
+                                ? 'Nhắc tôi lúc ${_formatReminder(selectedReminder!)}'
+                                : 'Nhắc tôi',
+                            isActive: isReminderActive,
+                            activeColor: widget.accentColor,
+                            isDark: isDark,
+                            onClear: isReminderActive ? clearReminder : null,
                           ),
-                          const SizedBox(width: AppSizes.sm),
-                          Expanded(
-                            child: Text(
-                              isReminderActive
-                                  ? 'Nhắc tôi lúc ${_formatReminder(selectedReminder!)}'
-                                  : 'Nhắc tôi',
-                              style: TextStyle(
-                                fontSize: 13.5,
-                                color: reminderColor,
-                                fontWeight: isReminderActive
-                                    ? FontWeight.w500
-                                    : FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                          if (isReminderActive)
-                            GestureDetector(
-                              onTap: clearReminder,
-                              child: Icon(
-                                Icons.close_rounded,
-                                color: reminderColor.withValues(alpha: 0.5),
-                                size: 16,
-                              ),
-                            ),
                         ],
                       ),
                     ),
