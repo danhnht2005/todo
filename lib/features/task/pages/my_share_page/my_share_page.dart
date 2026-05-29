@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../task_list/models/task_list_model.dart';
 import '../../../task_list/providers/task_list_provider.dart';
 
 class MySharePage extends StatefulWidget {
@@ -25,182 +26,170 @@ class _MySharePageState extends State<MySharePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkMode;
+    return Column(
+      children: [
+        const _MyShareHeader(),
+        Expanded(
+          child: Consumer<TaskListProvider>(
+            builder: (context, provider, _) {
+              final sharedLists = provider.lists
+                  .where((list) => !list.isOwner)
+                  .toList();
 
-    return Scaffold(
-      body: SafeArea(
-        child: Consumer<TaskListProvider>(
-          builder: (context, provider, _) {
-            final sharedLists = provider.lists
-                .where((list) => !list.isOwner)
-                .toList();
+              if (provider.isLoading && sharedLists.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (provider.isLoading && sharedLists.isEmpty) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (provider.errorMessage != null && sharedLists.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSizes.lg),
+              if (provider.errorMessage != null && sharedLists.isEmpty) {
+                return Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
-                        Icons.error_outline_rounded,
+                        Icons.error_outline,
                         size: 48,
                         color: AppColors.error,
                       ),
-                      const SizedBox(height: AppSizes.md),
+                      const SizedBox(height: 16),
                       Text(
                         provider.errorMessage!,
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: AppSizes.md),
+                      const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: provider.loadTaskLists,
                         child: const Text('Thử lại'),
                       ),
                     ],
                   ),
-                ),
-              );
-            }
+                );
+              }
 
-            if (sharedLists.isEmpty) {
+              if (sharedLists.isEmpty) {
+                return const EmptyStateWidget(
+                  icon: Icons.group_off_rounded,
+                  title: 'Chưa có danh sách được chia sẻ',
+                  subtitle:
+                      'Khi người khác chia sẻ danh sách với bạn, chúng sẽ xuất hiện ở đây.',
+                  iconColor: AppColors.myShare,
+                );
+              }
+
               return RefreshIndicator(
                 onRefresh: provider.loadTaskLists,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 120),
-                    EmptyStateWidget(
-                      icon: Icons.group_off_rounded,
-                      title: 'Chưa có danh sách được chia sẻ',
-                      subtitle:
-                          'Khi người khác chia sẻ danh sách với bạn, chúng sẽ xuất hiện ở đây.',
-                      iconColor: AppColors.customList,
-                    ),
-                  ],
+                child: ListView.builder(
+                  padding: const EdgeInsets.only(top: AppSizes.sm),
+                  itemCount: sharedLists.length,
+                  itemBuilder: (context, index) {
+                    return _SharedListItem(list: sharedLists[index]);
+                  },
                 ),
               );
-            }
-
-            return RefreshIndicator(
-              onRefresh: provider.loadTaskLists,
-              child: ListView(
-                padding: const EdgeInsets.all(AppSizes.lg),
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.customList.withValues(
-                            alpha: isDark ? 0.18 : 0.1,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.groups_rounded,
-                          color: AppColors.customList,
-                        ),
-                      ),
-                      const SizedBox(width: AppSizes.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Được chia sẻ với tôi',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: isDark
-                                    ? AppColors.textPrimaryDark
-                                    : AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${sharedLists.length} danh sách',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: isDark
-                                    ? AppColors.textSecondaryDark
-                                    : AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  ...sharedLists.map(
-                    (list) => _SharedListTile(
-                      title: list.title,
-                      onTap: () => context.go('/custom-list/${list.id}'),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+            },
+          ),
         ),
+      ],
+    );
+  }
+}
+
+class _MyShareHeader extends StatelessWidget {
+  const _MyShareHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.xxl,
+        AppSizes.lg,
+        AppSizes.xxl,
+        AppSizes.md,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.myShare.withValues(alpha: isDark ? 0.2 : 0.08),
+            Colors.transparent,
+          ],
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.person_rounded,
+            color: AppColors.myShare,
+            size: 28,
+          ),
+          const SizedBox(width: AppSizes.md),
+          Text(
+            'Đã giao cho tôi',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _SharedListTile extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
+class _SharedListItem extends StatelessWidget {
+  final TaskListModel list;
 
-  const _SharedListTile({
-    required this.title,
-    required this.onTap,
-  });
+  const _SharedListItem({required this.list});
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSizes.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.lg,
+        vertical: 4,
+      ),
       child: Material(
-        color: isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: () => context.go('/custom-list/${list.id}'),
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSizes.md,
-              vertical: AppSizes.md,
+              vertical: 14,
             ),
             decoration: BoxDecoration(
+              color: isDark
+                  ? AppColors.surfaceDark.withValues(alpha: 0.65)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               border: Border.all(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.06)
-                    : Colors.black.withValues(alpha: 0.06),
+                    : Colors.black.withValues(alpha: 0.05),
               ),
             ),
             child: Row(
               children: [
                 const Icon(
                   Icons.group_rounded,
-                  color: AppColors.customList,
+                  color: AppColors.myShare,
+                  size: AppSizes.iconMd,
                 ),
                 const SizedBox(width: AppSizes.md),
                 Expanded(
                   child: Text(
-                    title,
+                    list.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: isDark
                           ? AppColors.textPrimaryDark
