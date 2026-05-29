@@ -4,10 +4,6 @@ import '../constants/app_sizes.dart';
 import '../utils/extensions.dart';
 
 /// Hiển thị dialog xác nhận xóa dùng chung.
-///
-/// - [title]: Tiêu đề dialog (vd: 'Xóa danh sách?' / 'Xóa tác vụ?')
-/// - [content]: Nội dung mô tả hậu quả của việc xóa
-/// - [onConfirmed]: Callback được gọi khi người dùng xác nhận xóa
 Future<void> showConfirmDeleteDialog({
   required BuildContext context,
   required String title,
@@ -20,7 +16,9 @@ Future<void> showConfirmDeleteDialog({
       final isDark = dialogCtx.isDarkMode;
 
       return AlertDialog(
-        backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+        backgroundColor: isDark
+            ? AppColors.surfaceDark
+            : AppColors.surfaceLight,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         ),
@@ -35,7 +33,9 @@ Future<void> showConfirmDeleteDialog({
         content: Text(
           content,
           style: TextStyle(
-            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondary,
+            color: isDark
+                ? AppColors.textSecondaryDark
+                : AppColors.textSecondary,
           ),
         ),
         actions: [
@@ -44,16 +44,15 @@ Future<void> showConfirmDeleteDialog({
             child: Text(
               'Hủy bỏ',
               style: TextStyle(
-                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimary,
               ),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogCtx, true),
-            child: const Text(
-              'Xóa',
-              style: TextStyle(color: AppColors.error),
-            ),
+            child: const Text('Xóa', style: TextStyle(color: AppColors.error)),
           ),
         ],
       );
