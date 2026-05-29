@@ -77,6 +77,13 @@ class _SidebarWidgetState extends State<SidebarWidget> {
                   ),
                   buildSmartListItem(
                     context: context,
+                    icon: Icons.person_rounded,
+                    title: 'Đã giao cho tôi',
+                    color: AppColors.customList,
+                    routeName: 'my-share',
+                  ),
+                  buildSmartListItem(
+                    context: context,
                     icon: Icons.home_rounded,
                     title: 'Tác vụ',
                     color: AppColors.allTasks,

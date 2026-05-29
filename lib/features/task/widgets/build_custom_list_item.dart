@@ -40,7 +40,7 @@ Widget buildCustomListItem({
           child: Row(
             children: [
               Icon(
-                Icons.list_rounded, 
+                list.isOwner ? Icons.list_rounded : Icons.group_rounded,
                 color: isSelected ? AppColors.customList : (isDark ? Colors.white70 : Colors.black54),
                 size: AppSizes.iconMd,
               ),

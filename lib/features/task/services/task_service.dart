@@ -34,7 +34,11 @@ class TaskService {
   }) async {
     var query = _client.from('tasks').select('*, steps(*)');
 
-    query = query.eq('user_id', _userId);
+    // Shared custom lists can contain tasks created by different members.
+    // For smart lists, keep the filter scoped to the signed-in user.
+    if (listId == null) {
+      query = query.eq('user_id', _userId);
+    }
 
     if (isMyDay == true) {
       query = query.eq('is_my_day', true);
@@ -65,7 +69,6 @@ class TaskService {
         .from('tasks')
         .select('*, steps(*)')
         .eq('id', id)
-        .eq('user_id', _userId)
         .single();
 
     return TaskModel.fromJson(response);
